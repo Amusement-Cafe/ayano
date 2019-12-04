@@ -1,0 +1,14 @@
+{
+  "name": "ayano",
+  "version": "1.0.0",
+  "description": "Manager of Amusement Club Discord game",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "noxcaos",
+  "license": "MIT",
+  "dependencies": {
+    "npm": "^6.13.2"
+  }
+}
