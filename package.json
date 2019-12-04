@@ -9,6 +9,7 @@
   "author": "noxcaos",
   "license": "MIT",
   "dependencies": {
+    "aws-sdk": "^2.583.0",
     "npm": "^6.13.2"
   }
 }
