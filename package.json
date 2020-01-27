@@ -7,9 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "noxcaos",
-  "license": "MIT",
+  "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.583.0",
-    "npm": "^6.13.4"
+    "inquirer": "^7.0.4",
+    "mongodb": "^3.5.2",
+    "mongoose": "^5.8.9"
   }
 }
