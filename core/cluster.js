@@ -15,7 +15,7 @@ const startBot = async (ctx) => {
         const options  = Object.assign({shard: i, data: ctx.data}, ctx.config.bot)
         const instance = await amusement.start(options)
 
-        instance.on('info', msg => ctx.report(i, msg))
+        instance.on('info', msg => ctx.info(i, msg))
         instance.on('error', err => ctx.error(i, err))
     }
 
@@ -23,7 +23,7 @@ const startBot = async (ctx) => {
 }
 
 const withConfig = callback = (ctx) => {
-    ctx.report(`Getting config on path '${ctx.configPath}'`)
+    ctx.info(`Getting config on path '${ctx.configPath}'`)
     const cfg = require(`${ctx.configPath}`)
 
     if(!cfg || !cfg.bot)
@@ -35,7 +35,7 @@ const withConfig = callback = (ctx) => {
 }
 
 const withData = callback = (ctx) => {
-    ctx.report(`Performing data check on path '${ctx.dataPath}'`)
+    ctx.info(`Performing data check on path '${ctx.dataPath}'`)
     const cards = require(`${ctx.dataPath}/cards`)
     const collections = require(`${ctx.dataPath}/collections`)
 

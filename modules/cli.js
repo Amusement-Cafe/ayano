@@ -1,2 +1,0 @@
-const inquirer = require('inquirer')
-
