@@ -14,29 +14,32 @@ const startBot = async (ctx, argv) => {
     
     for(let i=0; i<ctx.config.shards; i++) {
         
-        const options  = Object.assign({shard: i, data: ctx.data}, ctx.config.bot)
+        const options  = Object.assign({shard: i, data: ctx.data}, ctx.config.shard)
         const instance = await amusement.start(options)
 
-        instance.on('info', msg => ctx.info(i, msg))
-        instance.on('error', err => ctx.error(i, err))
+        instance.on('info', msg => ctx.info(msg, i))
+        instance.on('error', err => ctx.error(err, i))
     }
 
     setInterval(tick.bind(this), ctx.config.tick)
+
+    return { keepalive: true }
 }
 
-const withConfig = callback => (ctx) => {
+const withConfig = callback => (ctx, argv) => {
     ctx.info(`Getting config on path '${ctx.configPath}'`)
     const cfg = requireOrDefault(`${ctx.configPath}`)
 
-    if(!cfg || !cfg.bot)
+    if(!cfg || !cfg.shard)
         return ctx.error(`Config not found`)
 
     ctx.config = cfg
+    ctx.config.shard.database = cfg.database
 
-    return callback(ctx)
+    return callback(ctx, argv)
 }
 
-const withData = callback => (ctx) => {
+const withData = callback => (ctx, argv) => {
     ctx.info(`Performing data check on path '${ctx.dataPath}'`)
     const cards = requireOrDefault(`${ctx.dataPath}/cards`)
     const collections = requireOrDefault(`${ctx.dataPath}/collections`)
@@ -54,7 +57,7 @@ const withData = callback => (ctx) => {
 
     ctx.data = { cards, collections, items, achievements, help }
 
-    return callback(ctx)
+    return callback(ctx, argv)
 }
 
 const tick = () => {
