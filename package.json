@@ -1,16 +1,20 @@
 {
   "name": "ayano",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Manager of Amusement Club Discord game",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "noxcaos",
   "license": "ISC",
   "dependencies": {
+    "amusementclub2.0": "file:../amusementClub2.0",
     "aws-sdk": "^2.583.0",
+    "command-line-args": "^5.1.1",
     "inquirer": "^7.0.4",
+    "lodash": "^4.17.15",
     "mongodb": "^3.5.2",
     "mongoose": "^5.8.9"
   }
