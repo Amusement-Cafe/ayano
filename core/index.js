@@ -1,4 +1,6 @@
-const cluster = require('./cluster')
+const { trigger } = require('./cmd')
+const modules = require('../modules')
+
 const commandLineArgs = require('command-line-args')
 
 const paths = {
@@ -6,13 +8,10 @@ const paths = {
     configPath: '/config',
 }
 
-module.exports = (ctx, args) => {
+module.exports = (ctx, argv) => {
     const isolatedCtx = Object.assign({}, ctx, paths)
     const mainOptions = commandLineArgs(
-        [{ name: 'command', defaultOption: true }], { stopAtFirstUnknown: true })
+        [{ name: 'command', defaultOption: true }], { argv, stopAtFirstUnknown: true })
 
-    const argv = mainOptions._unknown || []
-
-    console.log(mainOptions)
-    console.log(isolatedCtx)
+    return trigger(isolatedCtx, mainOptions)
 }

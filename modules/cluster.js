@@ -7,8 +7,9 @@ const amusement = require('amusementclub2.0')
 //const userq = require('amusementclub2.0/userq')
 const userq = []
 const _ = require('lodash')
+const { cmd } = require('../core/cmd')
 
-const startBot = async (ctx) => {
+const startBot = async (ctx, argv) => {
     
     for(let i=0; i<ctx.config.shards; i++) {
         
@@ -50,7 +51,7 @@ const withData = callback = (ctx) => {
     if(items.length === 0 || help.length === 0)
         return ctx.warn(`Some data appears to be empty. Some bot functions will be limited`)
 
-    ctx.data = { cards, collections, items, help }
+    ctx.data = { cards, collections, items, achievements, help }
 
     return callback(ctx)
 }
@@ -60,6 +61,4 @@ const tick = () => {
     _.remove(userq, (x) => x.expires < now)
 }
 
-module.exports = {
-    //startBot: withConfig(withData(startBot))
-}
+cmd(['start'], (ctx, argv) => withConfig(withData(startBot(ctx, argv))))

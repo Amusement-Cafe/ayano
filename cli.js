@@ -8,7 +8,9 @@ const main = async () => {
         error: (msg, shard) => console.error(`[ERR${shard? ` SH${shard}`:''}] ${msg}`),
     }
 
-    require('./core')(ctx, process.argv.slice(2))
+    await require('./core')(ctx, process.argv.slice(2))
+
+    process.exit()
 }
 
 
