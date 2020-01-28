@@ -9,9 +9,14 @@ const paths = {
 }
 
 module.exports = (ctx, argv) => {
-    const isolatedCtx = Object.assign({}, ctx, paths)
-    const mainOptions = commandLineArgs(
-        [{ name: 'command', defaultOption: true }], { argv, stopAtFirstUnknown: true })
+    try {
+        const isolatedCtx = Object.assign({}, ctx, paths)
+        const mainOptions = commandLineArgs(
+            [{ name: 'command', defaultOption: true }], { argv, stopAtFirstUnknown: true })
 
-    return trigger(isolatedCtx, mainOptions)
+        return trigger(isolatedCtx, mainOptions)
+
+    } catch(e) {
+        return ctx.error(e)
+    }
 }

@@ -8,6 +8,7 @@ const amusement = require('amusementclub2.0')
 const userq = []
 const _ = require('lodash')
 const { cmd } = require('../core/cmd')
+const { requireOrDefault } = require('../core/utils')
 
 const startBot = async (ctx, argv) => {
     
@@ -23,9 +24,9 @@ const startBot = async (ctx, argv) => {
     setInterval(tick.bind(this), ctx.config.tick)
 }
 
-const withConfig = callback = (ctx) => {
+const withConfig = callback => (ctx) => {
     ctx.info(`Getting config on path '${ctx.configPath}'`)
-    const cfg = require(`${ctx.configPath}`)
+    const cfg = requireOrDefault(`${ctx.configPath}`)
 
     if(!cfg || !cfg.bot)
         return ctx.error(`Config not found`)
@@ -35,18 +36,18 @@ const withConfig = callback = (ctx) => {
     return callback(ctx)
 }
 
-const withData = callback = (ctx) => {
+const withData = callback => (ctx) => {
     ctx.info(`Performing data check on path '${ctx.dataPath}'`)
-    const cards = require(`${ctx.dataPath}/cards`)
-    const collections = require(`${ctx.dataPath}/collections`)
+    const cards = requireOrDefault(`${ctx.dataPath}/cards`)
+    const collections = requireOrDefault(`${ctx.dataPath}/collections`)
 
     if(!cards || !collections)
         return ctx.error(`Cards and collections are required to start a cluster.
             Please make sure you run [ayy update] first to get the data`)
 
-    const items = require(`${ctx.dataPath}/items`) || []
-    const help = require(`${ctx.dataPath}/help`) || []
-    const achievements = require(`${ctx.dataPath}/achievements`) || []
+    const items = requireOrDefault(`${ctx.dataPath}/items`, [])
+    const help = requireOrDefault(`${ctx.dataPath}/help`, [])
+    const achievements = requireOrDefault(`${ctx.dataPath}/achievements`, [])
 
     if(items.length === 0 || help.length === 0)
         return ctx.warn(`Some data appears to be empty. Some bot functions will be limited`)
@@ -61,4 +62,4 @@ const tick = () => {
     _.remove(userq, (x) => x.expires < now)
 }
 
-cmd(['start'], (ctx, argv) => withConfig(withData(startBot(ctx, argv))))
+cmd(['start'], withConfig(withData(startBot)))
