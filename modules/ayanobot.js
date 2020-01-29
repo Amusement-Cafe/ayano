@@ -13,9 +13,7 @@ const colors = {
 
 var bot, connected
 
-const startbot = async(ctx, argv) => {
-    if(connected)
-        return await ctx.error(`AyanoBOT is already running`)
+module.exports = withConfig((ctx) => {
 
     bot = new Eris(ctx.config.ayanobot.token)
     var replych = ctx.config.ayanobot.reportchannel
@@ -23,18 +21,15 @@ const startbot = async(ctx, argv) => {
     const prefix = ctx.config.ayanobot.prefix
     const send = (content, col) => bot.createMessage(replych, { embed: { description: content, color: col || colors.blue } })
 
-    const format = (msg, shard) => `${!isNaN(shard)? `[SH${shard}] `:''}${msg}`
-    const rplinfo = (msg, shard) => send(format(msg, shard), colors.green)
-    const rplwarn = (msg, shard) => send(format(msg, shard), colors.yellow)
-    const rplerror = (msg, shard) => send(format(msg, shard), colors.red)
+    const format = (msg, shard) => `${!isNaN(shard)? `[SH${shard}] `:''}${msg}` 
+
+    events.on('info', (msg, shard) => send(format(msg, shard), colors.green))
+    events.on('warn', (msg, shard) => send(format(msg, shard), colors.yellow))
+    events.on('error', (msg, shard) => send(format(msg, shard), colors.red))
 
     /* events */
     bot.on('ready', async event => {
         connected = true
-
-        events.on('info', rplinfo)
-        events.on('warn', rplwarn)
-        events.on('error', rplerror)
 
         ctx.info('AyanoBOT connected and ready')
         await bot.editStatus('online', { name: 'over you', type: 3})
@@ -56,10 +51,7 @@ const startbot = async(ctx, argv) => {
     })
 
     bot.on('disconnect', () => {
-        console.log('unsubscribing')
-        events.off('info', rplinfo)
-        events.off('warn', rplwarn)
-        events.off('error', rplerror)
+        console.log('Bot disconnected')
     })
 
     bot.on('error', (err) => {
@@ -68,6 +60,12 @@ const startbot = async(ctx, argv) => {
 
     events.on('quit', () => disconnect(ctx))
 
+})
+
+const startbot = async(ctx, argv) => {
+    if(connected)
+        return await ctx.error(`AyanoBOT is already running`)
+    
     await bot.connect()
 }
 
