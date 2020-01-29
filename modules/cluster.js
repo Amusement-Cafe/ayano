@@ -4,7 +4,6 @@
 */
 
 const amusement                 = require('amusementclub2.0')
-const _                         = require('lodash')
 const { cmd }                   = require('../core/cmd')
 const { withConfig, withData }  = require('../core/with')
 
@@ -32,7 +31,7 @@ const stopBot = async (ctx, argv) => {
 }
 
 const quit = async (ctx, argv) => {
-    if(instance.bot) {
+    if(instance) {
         ctx.info('Safely disconnecting Amusement shards...')
         await instance.bot.disconnect()
     }

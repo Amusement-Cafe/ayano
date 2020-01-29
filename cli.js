@@ -2,15 +2,33 @@
 
 const core = require('./core')
 const readline = require('readline')
+const modules = require('./modules')
+
+const subscribers = {}
 
 const main = async () => {
     var keepalive = true
 
-    var ctx = {
-        info: (msg, shard) => console.log(`[INFO${!isNaN(shard)? ` SH${shard}`:''}] ${msg}`),
-        warn: (msg, shard) => console.warn(`[WARN${!isNaN(shard)? ` SH${shard}`:''}] ${msg}`),
-        error: (err, shard) => console.error(`[ERR${!isNaN(shard)? ` SH${shard}`:''}]`, err)
+    const ctx = {
+        on: (type, func) => {
+            if(!subscribers.hasOwnProperty(type))
+                subscribers[type] = []
+
+            subscribers[type].push(func)
+        }
     }
+
+    const trigger = (type, ...args) => subscribers[type].map(fn => fn(...args))
+
+    ctx.on('info', (msg, shard) => console.log(`[INFO${!isNaN(shard)? ` SH${shard}`:''}] ${msg}`))
+    ctx.on('warn', (msg, shard) => console.warn(`[WARN${!isNaN(shard)? ` SH${shard}`:''}] ${msg}`))
+    ctx.on('error', (msg, shard) => console.error(`[ERR${!isNaN(shard)? ` SH${shard}`:''}]`, msg))
+
+    ctx.info = (msg, shard) => trigger('info', msg, shard)
+    ctx.warn = (msg, shard) => trigger('warn', msg, shard)
+    ctx.error = (msg, shard) => trigger('error', msg, shard)
+
+    console.log(ctx)
 
     console.log(`AyanoCLI v0.1.0`)
     await core(ctx, process.argv.slice(2))
