@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Manager of Amusement Club Discord game",
   "main": "index.js",
+  "repository": "https://github.com/NoxCaos/ayano",
   "scripts": {
     "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,6 +14,7 @@
     "amusementclub2.0": "file:../amusementClub2.0",
     "aws-sdk": "^2.583.0",
     "command-line-args": "^5.1.1",
+    "eris": "^0.11.2",
     "inquirer": "^7.0.4",
     "lodash": "^4.17.15",
     "mongodb": "^3.5.2",

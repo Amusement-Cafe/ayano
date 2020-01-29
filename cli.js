@@ -6,7 +6,7 @@ const readline = require('readline')
 const main = async () => {
     var keepalive = false
 
-    const ctx = {
+    var ctx = {
         info: (msg, shard) => console.log(`[INFO${shard? ` SH${shard}`:''}] ${msg}`),
         warn: (msg, shard) => console.warn(`[WARN${shard? ` SH${shard}`:''}] ${msg}`),
         error: (err, shard) => { 
@@ -16,7 +16,7 @@ const main = async () => {
     }
 
     console.log(`AyanoCLI v0.1.0`)
-    const res = await core(ctx, process.argv.slice(2))
+    ctx = await core(ctx, process.argv.slice(2))
 
     if(res.keepalive) {
         keepalive = true
@@ -28,10 +28,15 @@ const main = async () => {
             if (line === "quit" || line === "q") 
                 rl.close()
 
-            await core(ctx, line.split(' '))
+            ctx = await core(ctx, line.split(' '))
             rl.prompt()
 
-        }).on('close', () => {
+        }).on('close', async () => {
+            if(ctx.bot){
+                console.log('Waiting for AyanoBOT to disconnect')
+                await ctx.bot.disconnect()
+            }
+
             console.log('Bye')
             process.exit(0)
         })
