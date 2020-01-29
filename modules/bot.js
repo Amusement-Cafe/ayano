@@ -2,23 +2,29 @@ const Eris              = require('eris')
 const { withConfig }    = require('../core/with')
 const { cmd }           = require('../core/cmd')
 
+var bot
+
 const startbot = async(ctx, argv) => {
-    ctx.bot = new Eris(ctx.config.ayanobot.token)
+    bot = new Eris(ctx.config.ayanobot.token)
 
     /* events */
-    ctx.bot.on('ready', async event => {
+    bot.on('ready', async event => {
         ctx.info('AyanoBOT connected and ready')
-        await ctx.bot.editStatus('online', { name: 'over you', type: 3})
+        await bot.editStatus('online', { name: 'over you', type: 3})
     })
 
-    await ctx.bot.connect()
+    await bot.connect()
 
     ctx.keepalive = true
     return ctx
 }
 
 const quit = async(ctx) => {
-    
+    if(bot){
+        ctx.info('Waiting for AyanoBOT to disconnect...')
+        await bot.disconnect()
+    } 
 }
 
 cmd(['watch'], withConfig(startbot))
+cmd(['quit'], quit)

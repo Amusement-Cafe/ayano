@@ -4,38 +4,31 @@ const core = require('./core')
 const readline = require('readline')
 
 const main = async () => {
-    var keepalive = false
+    var keepalive = true
 
     var ctx = {
-        info: (msg, shard) => console.log(`[INFO${shard? ` SH${shard}`:''}] ${msg}`),
-        warn: (msg, shard) => console.warn(`[WARN${shard? ` SH${shard}`:''}] ${msg}`),
-        error: (err, shard) => { 
-            console.error(`[ERR${shard? ` SH${shard}`:''}]`, err)
-            if(!shard && !keepalive) process.exit(1)
-        }
+        info: (msg, shard) => console.log(`[INFO${!isNaN(shard)? ` SH${shard}`:''}] ${msg}`),
+        warn: (msg, shard) => console.warn(`[WARN${!isNaN(shard)? ` SH${shard}`:''}] ${msg}`),
+        error: (err, shard) => console.error(`[ERR${!isNaN(shard)? ` SH${shard}`:''}]`, err)
     }
 
     console.log(`AyanoCLI v0.1.0`)
-    ctx = await core(ctx, process.argv.slice(2))
+    await core(ctx, process.argv.slice(2))
 
-    if(res.keepalive) {
-        keepalive = true
+    if(keepalive) {
         const rl = readline.createInterface(process.stdin, process.stdout)
-        rl.setPrompt('ayy> ')
+        rl.setPrompt('')
         rl.prompt()
 
         rl.on('line', async line => {
             if (line === "quit" || line === "q") 
-                rl.close()
+                return rl.close()
 
-            ctx = await core(ctx, line.split(' '))
+            await core(ctx, line.split(' '))
             rl.prompt()
 
         }).on('close', async () => {
-            if(ctx.bot){
-                console.log('Waiting for AyanoBOT to disconnect')
-                await ctx.bot.disconnect()
-            }
+            await core(ctx, ['quit'])
 
             console.log('Bye')
             process.exit(0)

@@ -5,10 +5,10 @@ const cmd = (aliases, callback) => {
 
     aliases.map(alias => {
         if (!cursor.hasOwnProperty(alias)) {
-            cursor[alias] = {}
+            cursor[alias] = { _callbacks: [] }
         }
 
-        cursor[alias]._callback = callback
+        cursor[alias]._callbacks.push(callback)
     })
 }
 
@@ -17,7 +17,7 @@ const trigger = (ctx, argv) => {
     if (!tree.hasOwnProperty(command)) 
         return ctx.error(`Unknown command '${command}'`)
 
-    return tree[command]._callback.apply({}, [ctx, argv._unknown])
+    return Promise.all(tree[command]._callbacks.map(x => x.apply({}, [ctx, argv._unknown])))
 }
 
 module.exports = { cmd, trigger }
