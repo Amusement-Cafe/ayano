@@ -30,7 +30,7 @@ const disconnect = async (ctx) => {
     if(!connected)
         return await ctx.error(`Amusement bot is not running`)
 
-    await instance.bot.disconnect()
+    await instance.bot.disconnect({reconnect:false})
     await ctx.warn(`Amusement bot was disconnected`)
     connected = false
 }

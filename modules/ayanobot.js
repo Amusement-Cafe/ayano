@@ -17,19 +17,25 @@ const startbot = async(ctx, argv) => {
     if(connected)
         return await ctx.error(`AyanoBOT is already running`)
 
-    bot = bot || new Eris(ctx.config.ayanobot.token)
+    bot = new Eris(ctx.config.ayanobot.token)
     var replych = ctx.config.ayanobot.reportchannel
 
     const prefix = ctx.config.ayanobot.prefix
     const send = (content, col) => bot.createMessage(replych, { embed: { description: content, color: col || colors.blue } })
 
-    events.on('info', (msg, shard) => send(`${!isNaN(shard)? `[SH${shard}] `:''}${msg}`, colors.green))
-    events.on('warn', (msg, shard) => send(`${!isNaN(shard)? `[SH${shard}] `:''}${msg}`, colors.yellow))
-    events.on('error', (msg, shard) => send(`${!isNaN(shard)? `[SH${shard}] `:''}${msg}`, colors.red))
+    const format = (msg, shard) => `${!isNaN(shard)? `[SH${shard}] `:''}${msg}`
+    const rplinfo = (msg, shard) => send(format(msg, shard), colors.green)
+    const rplwarn = (msg, shard) => send(format(msg, shard), colors.yellow)
+    const rplerror = (msg, shard) => send(format(msg, shard), colors.red)
 
     /* events */
     bot.on('ready', async event => {
         connected = true
+
+        events.on('info', rplinfo)
+        events.on('warn', rplwarn)
+        events.on('error', rplerror)
+
         ctx.info('AyanoBOT connected and ready')
         await bot.editStatus('online', { name: 'over you', type: 3})
     })
@@ -47,6 +53,13 @@ const startbot = async(ctx, argv) => {
         } catch(e) {
             ctx.error(e)
         }
+    })
+
+    bot.on('disconnect', () => {
+        console.log('unsubscribing')
+        events.off('info', rplinfo)
+        events.off('warn', rplwarn)
+        events.off('error', rplerror)
     })
 
     bot.on('error', (err) => {
