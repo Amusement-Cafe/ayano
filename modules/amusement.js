@@ -6,11 +6,12 @@
 const amusement                 = require('amusementclub2.0')
 const { cmd }                   = require('../core/cmd')
 const { withConfig, withData }  = require('../core/with')
+const events                    = require('../core/events')
 
-var instance
+var instance, connected
 
 const startBot = async (ctx, argv) => {
-    if(instance)
+    if(connected)
         return await ctx.error(`Amusement bot is already running`)
     
     const options  = Object.assign({shards: ctx.config.shards, data: ctx.data}, ctx.config.shard)
@@ -20,27 +21,19 @@ const startBot = async (ctx, argv) => {
     instance.emitter.on('error', ctx.error)
 
     ctx.amusement = instance.bot
+    connected = true
 
-    ctx.keepalive = true
-    return ctx
+    events.on('quit', async () => disconnect(ctx))
 }
 
-const stopBot = async (ctx, argv) => {
-    if(!instance)
+const disconnect = async (ctx) => {
+    if(!connected)
         return await ctx.error(`Amusement bot is not running`)
 
     await instance.bot.disconnect()
-    await ctx.info(`Amusement bot was disconnected`)
-    instance = null
-}
-
-const quit = async (ctx, argv) => {
-    if(instance) {
-        await ctx.info('Safely disconnecting Amusement shards...')
-        await instance.bot.disconnect()
-    }
+    await ctx.warn(`Amusement bot was disconnected`)
+    connected = false
 }
 
 cmd(['start'], withConfig(withData(startBot)))
-cmd(['stop'], stopBot)
-cmd(['quit'], quit)
+cmd(['stop'], disconnect)

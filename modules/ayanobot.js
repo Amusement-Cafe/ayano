@@ -2,6 +2,7 @@ const Eris              = require('eris')
 const { withConfig }    = require('../core/with')
 const { cmd }           = require('../core/cmd')
 const core              = require('../core')
+const events            = require('../core/events')
 
 const colors = {
     red: 14356753,
@@ -10,24 +11,25 @@ const colors = {
     blue: 1420012,
 }
 
-var bot, replych
+var bot, connected
 
 const startbot = async(ctx, argv) => {
-    if(bot)
+    if(connected)
         return await ctx.error(`AyanoBOT is already running`)
 
-    bot = new Eris(ctx.config.ayanobot.token)
-    replych = ctx.config.ayanobot.reportchannel
+    bot = bot || new Eris(ctx.config.ayanobot.token)
+    var replych = ctx.config.ayanobot.reportchannel
 
     const prefix = ctx.config.ayanobot.prefix
     const send = (content, col) => bot.createMessage(replych, { embed: { description: content, color: col || colors.blue } })
 
-    ctx.on('info', (msg, shard) => send(`${!isNaN(shard)? `[SH${shard}] `:''}${msg}`, colors.green))
-    ctx.on('warn', (msg, shard) => send(`${!isNaN(shard)? `[SH${shard}] `:''}${msg}`, colors.yellow))
-    ctx.on('error', (msg, shard) => send(`${!isNaN(shard)? `[SH${shard}] `:''}${msg}`, colors.red))
+    events.on('info', (msg, shard) => send(`${!isNaN(shard)? `[SH${shard}] `:''}${msg}`, colors.green))
+    events.on('warn', (msg, shard) => send(`${!isNaN(shard)? `[SH${shard}] `:''}${msg}`, colors.yellow))
+    events.on('error', (msg, shard) => send(`${!isNaN(shard)? `[SH${shard}] `:''}${msg}`, colors.red))
 
     /* events */
     bot.on('ready', async event => {
+        connected = true
         ctx.info('AyanoBOT connected and ready')
         await bot.editStatus('online', { name: 'over you', type: 3})
     })
@@ -40,35 +42,30 @@ const startbot = async(ctx, argv) => {
         try {
             const args = msg.content.trim().substring(prefix.length + 1).replace(/\s\s+/, ' ').split(/\s/)
             replych = msg.channel.id
-            await core(ctx, args)
+            await core(args)
             replych = ctx.config.ayanobot.reportchannel
         } catch(e) {
             ctx.error(e)
         }
     })
 
-    await bot.connect()
+    bot.on('error', (err) => {
+        ctx.error(err)
+    })
 
-    ctx.keepalive = true
-    return ctx
+    events.on('quit', () => disconnect(ctx))
+
+    await bot.connect()
 }
 
-const stopBot = async (ctx) => {
-    if(!bot)
+const disconnect = async (ctx) => {
+    if(!connected)
         return await ctx.error(`AyanoBOT is not running`)
 
-    await ctx.info('Bye!')
+    await ctx.warn('Disconnecting AyanoBOT...')
     await bot.disconnect()
-    bot = null
-}
-
-const quit = async(ctx) => {
-    if(bot){
-        await ctx.info('Waiting for AyanoBOT to disconnect...')
-        await bot.disconnect()
-    } 
+    connected = false
 }
 
 cmd(['watch'], withConfig(startbot))
-cmd(['stopwatch'], stopBot)
-cmd(['quit'], quit)
+cmd(['stopwatch'], disconnect)

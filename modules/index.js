@@ -1,5 +1,5 @@
 /* command registry */
-require('./cluster')
-require('./bot')
+require('./amusement')
+require('./ayanobot')
 
 module.exports = {}
