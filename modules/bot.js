@@ -13,6 +13,9 @@ const colors = {
 var bot, replych
 
 const startbot = async(ctx, argv) => {
+    if(bot)
+        return await ctx.error(`AyanoBOT is already running`)
+
     bot = new Eris(ctx.config.ayanobot.token)
     replych = ctx.config.ayanobot.reportchannel
 
@@ -50,12 +53,22 @@ const startbot = async(ctx, argv) => {
     return ctx
 }
 
+const stopBot = async (ctx) => {
+    if(!bot)
+        return await ctx.error(`AyanoBOT is not running`)
+
+    await ctx.info('Bye!')
+    await bot.disconnect()
+    bot = null
+}
+
 const quit = async(ctx) => {
     if(bot){
-        ctx.info('Waiting for AyanoBOT to disconnect...')
+        await ctx.info('Waiting for AyanoBOT to disconnect...')
         await bot.disconnect()
     } 
 }
 
 cmd(['watch'], withConfig(startbot))
+cmd(['stopwatch'], stopBot)
 cmd(['quit'], quit)

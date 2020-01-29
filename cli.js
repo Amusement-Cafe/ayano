@@ -18,7 +18,7 @@ const main = async () => {
         }
     }
 
-    const trigger = (type, ...args) => subscribers[type].map(fn => fn(...args))
+    const trigger = (type, ...args) => Promise.all(subscribers[type].map(fn => fn(...args)))
 
     ctx.on('info', (msg, shard) => console.log(`[INFO${!isNaN(shard)? ` SH${shard}`:''}] ${msg}`))
     ctx.on('warn', (msg, shard) => console.warn(`[WARN${!isNaN(shard)? ` SH${shard}`:''}] ${msg}`))
@@ -27,8 +27,6 @@ const main = async () => {
     ctx.info = (msg, shard) => trigger('info', msg, shard)
     ctx.warn = (msg, shard) => trigger('warn', msg, shard)
     ctx.error = (msg, shard) => trigger('error', msg, shard)
-
-    console.log(ctx)
 
     console.log(`AyanoCLI v0.1.0`)
     await core(ctx, process.argv.slice(2))

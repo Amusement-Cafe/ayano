@@ -10,6 +10,8 @@ const { withConfig, withData }  = require('../core/with')
 var instance
 
 const startBot = async (ctx, argv) => {
+    if(instance)
+        return await ctx.error(`Amusement bot is already running`)
     
     const options  = Object.assign({shards: ctx.config.shards, data: ctx.data}, ctx.config.shard)
     instance = await amusement.start(options)
@@ -25,14 +27,16 @@ const startBot = async (ctx, argv) => {
 
 const stopBot = async (ctx, argv) => {
     if(!instance)
-        return ctx.error(`Amusement bot is not running`)
+        return await ctx.error(`Amusement bot is not running`)
 
     await instance.bot.disconnect()
+    await ctx.info(`Amusement bot was disconnected`)
+    instance = null
 }
 
 const quit = async (ctx, argv) => {
     if(instance) {
-        ctx.info('Safely disconnecting Amusement shards...')
+        await ctx.info('Safely disconnecting Amusement shards...')
         await instance.bot.disconnect()
     }
 }
