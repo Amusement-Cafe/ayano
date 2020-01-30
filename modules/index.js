@@ -1,6 +1,7 @@
 /* command registry */
 
-module.exports = (ctx) => {
-	require('./amusement')(ctx)
-	require('./ayanobot')(ctx)
-}
+require('./amusement')
+require('./ayanobot')
+require('./cli')
+
+module.exports = { }

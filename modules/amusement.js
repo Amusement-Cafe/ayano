@@ -10,27 +10,32 @@ const events                    = require('../core/events')
 
 var instance, connected
 
-const startBot = async (ctx, argv) => {
-    if(connected)
-        return await ctx.error(`Amusement bot is already running`)
-    
+const create = async (ctx) => {
+
     const options  = Object.assign({shards: ctx.config.shards, data: ctx.data}, ctx.config.shard)
-    instance = await amusement.start(options)
+    instance = await amusement.create(options)
 
     instance.emitter.on('info', ctx.info)
     instance.emitter.on('error', ctx.error)
 
-    ctx.amusement = instance.bot
-    connected = true
+    events.on('quit', () => disconnect(ctx))
+}
 
-    events.on('quit', async () => disconnect(ctx))
+const startBot = async (ctx, argv) => {
+    if(connected)
+        return await ctx.error(`Amusement bot is already running`)
+    
+    if(!instance) await create(ctx)
+
+    await instance.connect()
+    connected = true
 }
 
 const disconnect = async (ctx) => {
     if(!connected)
         return await ctx.error(`Amusement bot is not running`)
 
-    await instance.bot.disconnect({reconnect:false})
+    await instance.disconnect()
     await ctx.warn(`Amusement bot was disconnected`)
     connected = false
 }

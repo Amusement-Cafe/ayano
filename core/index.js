@@ -3,6 +3,7 @@ const events = require('./events')
 
 const path = require('path')
 const commandLineArgs = require('command-line-args')
+require('../modules')
 
 const ctx = {
     events,
@@ -19,8 +20,7 @@ const ctx = {
             const mainOptions = commandLineArgs(
                 [{ name: 'command', defaultOption: true }], { argv, stopAtFirstUnknown: true })
 
-            if(!mainOptions.command)
-                return { keepalive: true }
+            mainOptions.command = mainOptions.command || 'default'
 
             trigger(ctx, mainOptions)
 
@@ -30,6 +30,8 @@ const ctx = {
     }
 }
 
-const modules = require('./modules')(ctx)
+ctx.events.on('info', (msg, shard) => console.log(`[INFO${!isNaN(shard)? ` SH${shard}`:''}] ${msg}`))
+ctx.events.on('warn', (msg, shard) => console.warn(`[WARN${!isNaN(shard)? ` SH${shard}`:''}] ${msg}`))
+ctx.events.on('error', (msg, shard) => console.error(`[ERR${!isNaN(shard)? ` SH${shard}`:''}]`, msg))
 
 module.exports = ctx

@@ -2,6 +2,4 @@
 
 const core = require('./core')
 
-const main = () => core.input(process.argv.slice(2))
-
-main().catch(console.error)
+core.input(process.argv.slice(2))

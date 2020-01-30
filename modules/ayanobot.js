@@ -1,7 +1,6 @@
 const Eris              = require('eris')
 const { withConfig }    = require('../core/with')
 const { cmd }           = require('../core/cmd')
-const core              = require('../core')
 const events            = require('../core/events')
 
 const colors = {
@@ -13,13 +12,16 @@ const colors = {
 
 var bot, connected
 
-module.exports = withConfig((ctx) => {
+const create = withConfig((ctx) => {
 
     bot = new Eris(ctx.config.ayanobot.token)
     var replych = ctx.config.ayanobot.reportchannel
 
     const prefix = ctx.config.ayanobot.prefix
-    const send = (content, col) => bot.createMessage(replych, { embed: { description: content, color: col || colors.blue } })
+    const send = (content, col) => {
+        if(connected)
+            return bot.createMessage(replych, { embed: { description: content, color: col || colors.blue } })
+    } 
 
     const format = (msg, shard) => `${!isNaN(shard)? `[SH${shard}] `:''}${msg}` 
 
@@ -43,7 +45,7 @@ module.exports = withConfig((ctx) => {
         try {
             const args = msg.content.trim().substring(prefix.length + 1).replace(/\s\s+/, ' ').split(/\s/)
             replych = msg.channel.id
-            await core(args)
+            await ctx.input(args)
             replych = ctx.config.ayanobot.reportchannel
         } catch(e) {
             ctx.error(e)
@@ -54,9 +56,7 @@ module.exports = withConfig((ctx) => {
         console.log('Bot disconnected')
     })
 
-    bot.on('error', (err) => {
-        ctx.error(err)
-    })
+    bot.on('error', ctx.error)
 
     events.on('quit', () => disconnect(ctx))
 
@@ -65,6 +65,8 @@ module.exports = withConfig((ctx) => {
 const startbot = async(ctx, argv) => {
     if(connected)
         return await ctx.error(`AyanoBOT is already running`)
+
+    if(!bot) create(ctx)
     
     await bot.connect()
 }
@@ -73,8 +75,8 @@ const disconnect = async (ctx) => {
     if(!connected)
         return await ctx.error(`AyanoBOT is not running`)
 
-    await ctx.warn('Disconnecting AyanoBOT...')
     await bot.disconnect()
+    await ctx.warn('AyanoBOT was disconnected')
     connected = false
 }
 
