@@ -19,6 +19,8 @@ const create = async (ctx) => {
     instance.emitter.on('error', ctx.error)
 
     events.on('quit', () => disconnect(ctx))
+    events.on('colupdate', (data) => instance.updateCols(data))
+    events.on('cardupdate', (data) => instance.updateCards(data))
 }
 
 const startBot = async (ctx, argv) => {

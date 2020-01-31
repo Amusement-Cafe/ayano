@@ -82,14 +82,14 @@ const update = async (ctx, argv) => {
 
     if(newcol) {
         ctx.info('Writing collections to disk...')
-        fs.writeFileSync(`${ctx.dataPath}/collections.json`, JSON.stringify(ctx.data.collections, null, 2))
         ctx.events.emit('colupdate', ctx.data.collections)
+        fs.writeFileSync(`${ctx.dataPath}/collections.json`, JSON.stringify(ctx.data.collections, null, 2))
     }
 
     if(newcard) {
         ctx.info('Writing cards to disk...')
+        ctx.events.emit('cardupdate', ctx.data.cards)
         fs.writeFileSync(`${ctx.dataPath}/cards.json`, JSON.stringify(ctx.data.cards, null, 2))
-        ctx.events.emit('cardupdate', ctx.data.collections)
     }
     
     ctx.info(`All data was saved`)
@@ -136,11 +136,9 @@ const getCardObject = (name, collection) => {
         .replace(/&apos;/g, "")
 
     const split = name.split('.')
-    col = collection.replace(/=/g, '')
-
     return {
         name: split[0].substr(2),
-        col,
+        col: collection,
         level: parseInt(name[0]),
         animated: split[1] === 'gif'
     }
