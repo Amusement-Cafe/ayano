@@ -31,7 +31,7 @@ const ctx = {
 }
 
 ctx.events.on('info', (msg, shard) => console.log(`[INFO${!isNaN(shard)? ` SH${shard}`:''}] ${msg}`))
-ctx.events.on('warn', (msg, shard) => console.warn(`[WARN${!isNaN(shard)? ` SH${shard}`:''}] ${msg}`))
+ctx.events.on('warn', (msg, shard) => console.log(`[WARN${!isNaN(shard)? ` SH${shard}`:''}] ${msg}`))
 ctx.events.on('error', (msg, shard) => console.error(`[ERR${!isNaN(shard)? ` SH${shard}`:''}]`, msg))
 
 module.exports = ctx

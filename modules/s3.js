@@ -1,70 +1,149 @@
 
-//this is old and has to be changed
+const AWS               = require('aws-sdk')
+const { cmd }           = require('../core/cmd')
+const commandLineArgs   = require('command-line-args')
+const fs                = require('fs')
+const { 
+    withConfig,
+    withData 
+} = require('../core/with')
 
-scanCards = async (callback, allCards, root, marker, collected = [], cols = []) => {
-    let params = {Bucket: 'amusementclub', MaxKeys: 2000};
 
-    if(marker)
-        params.Marker = marker;
+const acceptedExts = ['png', 'gif', 'jpg']
 
-    s3.listObjects(params, async (err, data) => {
-        if(err) console.log(err);
+var s3, endpoint, conf
 
-        let len = 0;
-        data.Contents.map(object => {
-            let item = object.Key.split('.')[0];
-            let ext = object.Key.split('.')[1];
-            if(ext && acceptedExts.includes(ext) &&
-                item.startsWith(root) && !allCards.includes(item)){
-                let split = item.split('/');
-                if(split.length == 3) {
-                    let card = getCardObject(split[2] + '.' + ext, split[1]);
-                    collected.push(card);
-                    let col = cols.filter(c => c.name == split[1])[0];
-                    if(!col) cols.push({name: split[1], special: root == 'promo', compressed: ext == 'jpg'});
-                    else if(!card.craft && ext == 'jpg') col.compressed = true;
-                    len++;
-                }
-            }
-        });
-
-        callback(len, collected.length);
-
-        if (data.IsTruncated) {
-            let marker = data.Contents[data.Contents.length - 1].Key;
-            let res = await loadFilesFromS3(callback, allCards, root, marker, collected, cols);
-            return resolve(res);
-        } else {
-            cols.forEach(item => {
-                if (!collections.parseCollection(item.name).length)
-                    collections.addCollection(item.name, item.special, item.compressed);
-            });
-            resolve(collected);
-        }
-    });
+const create = (ctx) => {
+    conf = ctx.config.aws
+    endpoint = new AWS.Endpoint(conf.endpoint)
+    s3 = new AWS.S3({
+        endpoint, 
+        accessKeyId: conf.s3accessKeyId, 
+        secretAccessKey: conf.s3secretAccessKey
+    })
 }
 
-getCardObject = (name, collection) => {
+const update = async (ctx, argv) => {
+    if(!s3) create(ctx)
+
+    ctx.warn(`Initializing card update...`)
+
+    const options = getoptions(ctx, argv)
+    const params = { Bucket: conf.bucket, MaxKeys: 2000 }
+    const res = []
+    let data = {}, passes = 1, newcol = false, newcard = false
+
+    do {
+        try {
+            let count = 0
+            data = await listObjectsAsync(params)
+            params.Marker = data.Contents[data.Contents.length - 1].Key
+
+            data.Contents.filter(x => x.Key.startsWith(conf.cardroot)).map(x => {
+                const item = x.Key.split('.')[0]
+                const ext = x.Key.split('.')[1]
+                if(ext && acceptedExts.includes(ext)) {
+                    const split = item.split('/')
+                    if(split.length === 3 && (!options.col || options.col.includes(split[1]))) {
+                        if(!ctx.data.collections.filter(c => c.id === split[1])[0]) {
+                            ctx.data.collections.push({
+                                id: split[1], 
+                                name: split[1],
+                                aliases: [split[1]],
+                                promo: false,
+                                compressed: ext === 'jpg'
+                            })
+
+                            res.push(`New collection: **${split[1]}**`)
+                            newcol = true
+                        }
+
+                        const card = getCardObject(split[2] + '.' + ext, split[1])
+                        if(!ctx.data.cards.filter(x => x.name === card.name 
+                            && x.level === card.level 
+                            && x.col === card.col)[0]){
+                            count++
+                            ctx.data.cards.push(card)
+                            newcard = true
+                        }
+                    }
+                }
+            })
+
+            res.push(`Pass ${passes} got ${count} new cards`)
+            passes++
+        } catch (e) {
+            return ctx.error(e)
+        }
+    } while(data.IsTruncated)
+
+    res.push(`Finished updating cards. Writing data to disk...`)
+    ctx.info(res.join('\n'))
+
+    if(newcol) {
+        ctx.info('Writing collections to disk...')
+        fs.writeFileSync(`${ctx.dataPath}/collections.json`, JSON.stringify(ctx.data.collections, null, 2))
+        ctx.events.emit('colupdate', ctx.data.collections)
+    }
+
+    if(newcard) {
+        ctx.info('Writing cards to disk...')
+        fs.writeFileSync(`${ctx.dataPath}/cards.json`, JSON.stringify(ctx.data.cards, null, 2))
+        ctx.events.emit('cardupdate', ctx.data.collections)
+    }
+    
+    ctx.info(`All data was saved`)
+}
+
+const getoptions = (ctx, argv) => {
+    if(!argv) return {}
+
+    const options = commandLineArgs([
+            { name: 'col', type: String, multiple: true, defaultOption: true },
+        ], { argv, stopAtFirstUnknown: true })
+
+    const info = []
+    if(options.col) {
+        const cols = ctx.data.collections.filter(x => options.col.includes(x.id))
+
+        info.push(`Updating cards for collection(s): **${cols.map(x => x.name || x.id).join(' | ')}**`)
+
+        if(cols.length != options.col.length)
+            info.push(`Considering new collection cards from ${options.col.filter(x => cols.filter(y => y.id === x)).join(' | ')}`)
+    }
+
+    ctx.info(info.join('\n'))
+
+    return options
+}
+
+const listObjectsAsync = (params) => new Promise((resolve, reject) => { 
+    s3.listObjects(params, (err, data) => { 
+        if(err){
+            reject(err) 
+        } else {
+            resolve(data)
+        }
+    })
+})
+
+const getCardObject = (name, collection) => {
     name = name
         .replace(/ /g, '_')
         .replace(/'/g, '')
         .trim()
         .toLowerCase()
-        .replace(/&apos;/g, "");
+        .replace(/&apos;/g, "")
 
-    let split = name.split('.');
-    let craft = name.substr(1, 2) === "cr";
+    const split = name.split('.')
+    col = collection.replace(/=/g, '')
 
-    collection = collection.replace(/=/g, '');
     return {
-        "name": craft? split[0].substr(4) : split[0].substr(2),
-        "collection": collection,
-        "level": parseInt(name[0]),
-        "animated": split[1] === 'gif',
-        "craft": craft
+        name: split[0].substr(2),
+        col,
+        level: parseInt(name[0]),
+        animated: split[1] === 'gif'
     }
 }
 
-module.exports = {
-
-}
+cmd(['update'], withConfig(withData(update)))
