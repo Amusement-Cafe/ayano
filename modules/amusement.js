@@ -12,6 +12,7 @@ var instance, connected
 
 const create = async (ctx) => {
 
+    ctx.allowExit = false
     const options  = Object.assign({shards: ctx.config.shards, data: ctx.data}, ctx.config.shard)
     instance = await amusement.create(options)
 

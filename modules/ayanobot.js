@@ -14,6 +14,7 @@ var bot, connected
 
 const create = withConfig((ctx) => {
 
+    ctx.allowExit = false
     bot = new Eris(ctx.config.ayanobot.token)
     var replych = ctx.config.ayanobot.reportchannel
 

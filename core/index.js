@@ -15,17 +15,21 @@ const ctx = {
     warn: (msg, shard) => events.emit('warn', msg, shard),
     error: (msg, shard) => events.emit('error', msg, shard),
 
-    input: (argv) => {
+    allowExit: true,
+
+    input: async (argv) => {
         try {
             const mainOptions = commandLineArgs(
                 [{ name: 'command', defaultOption: true }], { argv, stopAtFirstUnknown: true })
 
             mainOptions.command = mainOptions.command || 'default'
 
-            trigger(ctx, mainOptions)
+            await trigger(ctx, mainOptions)
 
+            if(ctx.allowExit) process.exit(0)
         } catch(e) {
             ctx.error(e)
+            if(ctx.allowExit) process.exit(1)
         }
     }
 }

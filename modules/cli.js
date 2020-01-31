@@ -9,6 +9,7 @@ const createInterface = (ctx) => {
 
     console.log(`AyanoCLI v0.1.0`)
 
+    ctx.allowExit = false
     readLine = readline.createInterface(process.stdin, process.stdout)
     readLine.setPrompt('')
     readLine.prompt()
