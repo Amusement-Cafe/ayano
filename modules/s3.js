@@ -30,7 +30,6 @@ const update = async (ctx, argv) => {
 
     const options = getoptions(ctx, argv)
     const params = { Bucket: conf.bucket, MaxKeys: 2000 }
-    const res = []
     let data = {}, passes = 1, newcol = false, newcard = false
 
     do {
@@ -54,7 +53,7 @@ const update = async (ctx, argv) => {
                                 compressed: ext === 'jpg'
                             })
 
-                            res.push(`New collection: **${split[1]}**`)
+                            ctx.info(`New collection: **${split[1]}**`)
                             newcol = true
                         }
 
@@ -70,15 +69,14 @@ const update = async (ctx, argv) => {
                 }
             })
 
-            res.push(`Pass ${passes} got ${count} new cards`)
+            ctx.info(`Pass ${passes} got ${count} new cards`)
             passes++
         } catch (e) {
             return ctx.error(e)
         }
     } while(data.IsTruncated)
 
-    res.push(`Finished updating cards. Writing data to disk...`)
-    ctx.info(res.join('\n'))
+    ctx.info(`Finished updating cards. Writing data to disk...`)
 
     if(newcol) {
         ctx.info('Writing collections to disk...')

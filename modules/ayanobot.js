@@ -16,12 +16,26 @@ const create = withConfig((ctx) => {
 
     ctx.allowExit = false
     bot = new Eris(ctx.config.ayanobot.token)
-    var replych = ctx.config.ayanobot.reportchannel
+    var replych = ctx.config.ayanobot.reportchannel, lastmsg, tm
 
     const prefix = ctx.config.ayanobot.prefix
-    const send = (content, col) => {
-        if(connected)
-            return bot.createMessage(replych, { embed: { description: content, color: col || colors.blue } })
+    const send = async (content, col) => {
+        if(!connected) return;
+
+        try {
+            const color = col || colors.blue
+            if(lastmsg && lastmsg.embed.color === color) {
+                lastmsg.embed.description += `\n${content}`
+                await bot.editMessage(lastmsg.ch, lastmsg.id, { embed: lastmsg.embed })
+            } else {
+                const embed = { description: content, color }
+                const msg = await bot.createMessage(replych, { embed })
+                lastmsg = { id: msg.id, ch: msg.channel.id, embed }
+            }
+
+            clearTimeout(tm)
+            tm = setTimeout(() => lastmsg = null, ctx.config.grouptimeout)
+        } catch(e) { ctx.error(e) }
     } 
 
     const format = (msg, shard) => `${!isNaN(shard)? `[SH${shard}] `:''}${msg}` 
