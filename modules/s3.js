@@ -2,7 +2,8 @@
 const AWS               = require('aws-sdk')
 const { cmd }           = require('../core/cmd')
 const commandLineArgs   = require('command-line-args')
-const fs                = require('fs')
+const write             = require('./write')
+
 const { 
     withConfig,
     withData 
@@ -76,21 +77,11 @@ const update = async (ctx, argv) => {
         }
     } while(data.IsTruncated)
 
-    ctx.info(`Finished updating cards. Writing data to disk...`)
-
-    if(newcol) {
-        ctx.info('Writing collections to disk...')
-        ctx.events.emit('colupdate', ctx.data.collections)
-        fs.writeFileSync(`${ctx.dataPath}/collections.json`, JSON.stringify(ctx.data.collections, null, 2))
-    }
-
-    if(newcard) {
-        ctx.info('Writing cards to disk...')
-        ctx.events.emit('cardupdate', ctx.data.cards)
-        fs.writeFileSync(`${ctx.dataPath}/cards.json`, JSON.stringify(ctx.data.cards, null, 2))
-    }
+    ctx.info(`Finished updating cards`)
+    if(newcol) write.collections(ctx)
+    if(newcard) write.cards(ctx)
     
-    ctx.info(`All data was saved`)
+    ctx.info(`All data was checked and saved`)
 }
 
 const getoptions = (ctx, argv) => {
