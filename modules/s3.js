@@ -39,7 +39,7 @@ const update = async (ctx, argv) => {
             data = await listObjectsAsync(params)
             params.Marker = data.Contents[data.Contents.length - 1].Key
 
-            data.Contents.filter(x => x.Key.startsWith(conf.cardroot)).map(x => {
+            data.Contents.filter(x => x.Key.startsWith(options.promo? 'promo/' : conf.cardroot)).map(x => {
                 const item = x.Key.split('.')[0]
                 const ext = x.Key.split('.')[1]
                 if(ext && acceptedExts.includes(ext)) {
@@ -50,7 +50,7 @@ const update = async (ctx, argv) => {
                                 id: split[1], 
                                 name: split[1],
                                 aliases: [split[1]],
-                                promo: false,
+                                promo: options.promo,
                                 compressed: ext === 'jpg'
                             })
 
@@ -80,7 +80,7 @@ const update = async (ctx, argv) => {
     ctx.info(`Finished updating cards`)
     if(newcol) write.collections(ctx)
     if(newcard) write.cards(ctx)
-    
+
     ctx.info(`All data was checked and saved`)
 }
 
@@ -88,18 +88,23 @@ const getoptions = (ctx, argv) => {
     if(!argv) return {}
 
     const options = commandLineArgs([
-            { name: 'col', type: String, multiple: true, defaultOption: true },
+            { name: 'col', alias: 'c', type: String, multiple: true, defaultOption: true },
+            { name: 'promo', alias:'p', type: Boolean },
         ], { argv, stopAtFirstUnknown: true })
 
     const info = []
     if(options.col) {
         const cols = ctx.data.collections.filter(x => options.col.includes(x.id))
 
-        info.push(`Updating cards for collection(s): **${cols.map(x => x.name || x.id).join(' | ')}**`)
+        if(cols.length > 0)
+            info.push(`Updating cards for collection(s): ${cols.map(x => x.name || x.id).join(' | ')}`)
 
         if(cols.length != options.col.length)
             info.push(`Considering new collection cards from ${options.col.filter(x => cols.filter(y => y.id === x)).join(' | ')}`)
     }
+
+    if(options.promo)
+        info.push(`Added collections will be marked as promo`)
 
     ctx.info(info.join('\n'))
 

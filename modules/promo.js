@@ -34,14 +34,15 @@ const addPromo = async (ctx, argv) => {
 
     const col = ctx.data.collections.filter(x => x.id === options.src)[0]
 
-    //if(!col)
-        //return ctx.error(`Collection '${options.src}' was not found. Please update cards first`)
+    if(!col)
+        return ctx.error(`Collection '${options.src}' was not found. Please update cards first`)
 
     if(ctx.data.promos.some(x => x.id === options.src))
         return ctx.error(`Promo '${options.src}' walready exists`)
 
     const promo = {
         id: options.src,
+        name: col.name,
         starts: options.start,
         expires: options.end,
         currency: options.currency,
