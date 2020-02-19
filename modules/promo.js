@@ -46,7 +46,6 @@ const addPromo = async (ctx, argv) => {
         starts: options.start,
         expires: options.end,
         currency: options.currency,
-        isboost: false,
     }
 
     ctx.data.promos.push(promo)

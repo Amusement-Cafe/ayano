@@ -31,12 +31,14 @@ const withData = callback => (ctx, argv) => {
     const items = requireOrDefault(`${ctx.dataPath}/items`, [])
     const help = requireOrDefault(`${ctx.dataPath}/help`, [])
     const achievements = requireOrDefault(`${ctx.dataPath}/achievements`, [])
+    const quests = requireOrDefault(`${ctx.dataPath}/quests`, {daily: []})
     const promos = requireOrDefault(`${ctx.dataPath}/promos`, [])
+    const boosts = requireOrDefault(`${ctx.dataPath}/boosts`, [])
 
     if(items.length === 0 || help.length === 0)
         return ctx.warn(`Some data appears to be empty. Some bot functions will be limited`)
 
-    ctx.data = { cards, collections, items, achievements, help, promos }
+    ctx.data = { cards, collections, items, achievements, help, promos, boosts }
 
     return callback(ctx, argv)
 }

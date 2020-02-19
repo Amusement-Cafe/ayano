@@ -31,15 +31,14 @@ const cards = (ctx) => {
 }
 
 const promos = (ctx) => {
-    ctx.info('Writing promos to disk...')
-    ctx.events.emit('promoupdate', ctx.data.cards)
+    ctx.info('Writing promos and boosts to disk...')
+    ctx.events.emit('promoupdate', ctx.data.promos)
 
     const list = ctx.data.promos.map(x => ({
         id: x.id,
         starts: x.starts,
         expires: x.expires,
         currency: x.currency,
-        isboost: x.isboost,
     }))
 
     fs.writeFileSync(`${ctx.dataPath}/promos.json`, JSON.stringify(list, null, 2))
