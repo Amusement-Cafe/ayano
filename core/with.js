@@ -31,13 +31,31 @@ const withData = callback => (ctx, argv) => {
     const items = requireOrDefault(`${ctx.dataPath}/items`, [])
     const help = requireOrDefault(`${ctx.dataPath}/help`, [])
     const achievements = requireOrDefault(`${ctx.dataPath}/achievements`, [])
+    const promos = requireOrDefault(`${ctx.dataPath}/promos`, [])
 
     if(items.length === 0 || help.length === 0)
         return ctx.warn(`Some data appears to be empty. Some bot functions will be limited`)
 
-    ctx.data = { cards, collections, items, achievements, help }
+    ctx.data = { cards, collections, items, achievements, help, promos }
 
     return callback(ctx, argv)
 }
 
-module.exports = { withConfig, withData }
+const withDB = callback => async (ctx, argv) => {
+    if(!ctx.config)
+        return ctx.error(`Config is required to connect to database. Please provide config first`)
+
+    if(ctx.mcn)
+        return callback(ctx, argv)
+
+    ctx.info(`Connecting to database`)
+    const mongoUri = ctx.config.database
+    const mongoOpt = {useNewUrlParser: true, useUnifiedTopology: true}
+
+    ctx.mcn = await require('mongoose').connect(mongoUri, mongoOpt)
+    ctx.info(`Successfully connected.`)
+
+    return callback(ctx, argv)
+}
+
+module.exports = { withConfig, withData, withDB }

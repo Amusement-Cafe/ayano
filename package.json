@@ -14,6 +14,7 @@
     "amusementclub2.0": "file:../amusementClub2.0",
     "aws-sdk": "^2.583.0",
     "command-line-args": "^5.1.1",
+    "datejs": "^1.0.0-rc3",
     "eris": "^0.11.2",
     "inquirer": "^7.0.4",
     "lodash": "^4.17.15",
