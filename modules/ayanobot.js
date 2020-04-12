@@ -1,7 +1,11 @@
 const Eris              = require('eris')
-const { withConfig }    = require('../core/with')
 const { cmd }           = require('../core/cmd')
 const events            = require('../core/events')
+
+const { 
+    withConfig, 
+    withCLI 
+} = require('../core/with')
 
 const colors = {
     red: 14356753,
@@ -95,5 +99,5 @@ const disconnect = async (ctx) => {
     connected = false
 }
 
-cmd(['watch'], withConfig(startbot))
+cmd(['watch'], withCLI(withConfig(startbot)))
 cmd(['stopwatch'], disconnect)

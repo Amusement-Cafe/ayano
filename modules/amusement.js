@@ -3,10 +3,15 @@
 * Used by CLI and bot
 */
 
-const amusement                 = require('amusementclub2.0')
-const { cmd }                   = require('../core/cmd')
-const { withConfig, withData }  = require('../core/with')
-const events                    = require('../core/events')
+const amusement = require('amusementclub2.0')
+const { cmd }   = require('../core/cmd')
+const events    = require('../core/events')
+
+const { 
+    withConfig, 
+    withData, 
+    withCLI 
+}  = require('../core/with')
 
 var instance, connected
 
@@ -43,5 +48,5 @@ const disconnect = async (ctx) => {
     connected = false
 }
 
-cmd(['start'], withConfig(withData(startBot)))
+cmd(['start'], withCLI(withConfig(withData(startBot))))
 cmd(['stop'], disconnect)

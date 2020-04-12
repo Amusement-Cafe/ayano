@@ -24,12 +24,12 @@ const create = (ctx) => {
     })
 }
 
-const update = async (ctx, argv) => {
+const update = async (ctx, ...args) => {
     if(!s3) create(ctx)
 
     ctx.warn(`Initializing card update...`)
 
-    const options = getoptions(ctx, argv)
+    const options = getoptions(ctx, ...args)
     const params = { Bucket: conf.bucket, MaxKeys: 2000 }
     let data = {}, passes = 1, newcol = false, newcard = false
 
@@ -84,7 +84,7 @@ const update = async (ctx, argv) => {
     ctx.info(`All data was checked and saved`)
 }
 
-const getoptions = (ctx, argv) => {
+const getoptions = (ctx, ...argv) => {
     if(!argv) return {}
 
     const options = commandLineArgs([
@@ -93,6 +93,7 @@ const getoptions = (ctx, argv) => {
         ], { argv, stopAtFirstUnknown: true })
 
     const info = []
+    console.log(options)
     if(options.col) {
         const cols = ctx.data.collections.filter(x => options.col.includes(x.id))
 
@@ -106,7 +107,8 @@ const getoptions = (ctx, argv) => {
     if(options.promo)
         info.push(`Added collections will be marked as promo`)
 
-    ctx.info(info.join('\n'))
+    if(info.length > 0)
+        ctx.info(info.join('\n'))
 
     return options
 }

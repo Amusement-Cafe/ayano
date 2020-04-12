@@ -1,23 +1,44 @@
 const tree = {}
 
-const cmd = (aliases, callback) => {
-    const cursor = tree
+const cmd = (...args) => buildTree(args)
 
-    aliases.map(alias => {
-        if (!cursor.hasOwnProperty(alias)) {
-            cursor[alias] = { _callbacks: [] }
-        }
+const buildTree = (args) => {
+    const callback = args.pop()
+    const cursors = []
 
-        cursor[alias]._callbacks.push(callback)
+    args.map(alias => {
+        let sequence = Array.isArray(alias) ? alias : [alias]
+        let cursor = tree
+
+        sequence.map(arg => {
+            if (!cursor.hasOwnProperty(arg)) {
+                cursor[arg] = {}
+            }
+
+            cursor = cursor[arg]
+        })
+
+        cursor._callback = callback
+        cursors.push(cursor)
     })
 }
 
-const trigger = (ctx, argv) => {
-    const command = argv.command
-    if (!tree.hasOwnProperty(command)) 
-        return ctx.error(`Unknown command '${command}'`)
+const trigger = (ctx, args) => {
+    let cursor = tree
 
-    return Promise.all(tree[command]._callbacks.map(x => x.apply({}, [ctx, argv._unknown])))
+    if(args.length === 0)
+        args.push('default')
+
+    while (cursor.hasOwnProperty(args[0])) {
+        cursor = cursor[args[0]]
+        args.shift()
+    }
+
+    if (!cursor.hasOwnProperty('_callback')) {
+        return ctx.error(`Unknown command tree '${args.join(' ')}'`)
+    }
+
+    return cursor._callback.apply({}, [ctx].concat(args))
 }
 
 module.exports = { cmd, trigger }

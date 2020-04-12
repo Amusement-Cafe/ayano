@@ -19,12 +19,12 @@ const ctx = {
 
     input: async (argv) => {
         try {
-            const mainOptions = commandLineArgs(
+            /*const mainOptions = commandLineArgs(
                 [{ name: 'command', defaultOption: true }], { argv, stopAtFirstUnknown: true })
 
-            mainOptions.command = mainOptions.command || 'default'
+            mainOptions.command = mainOptions.command || 'default'*/
 
-            await trigger(ctx, mainOptions)
+            await trigger(ctx, argv)
 
             if(ctx.allowExit) process.exit(0)
         } catch(e) {
@@ -34,8 +34,8 @@ const ctx = {
     }
 }
 
-ctx.events.on('info', (msg, shard) => console.log(`[INFO${!isNaN(shard)? ` SH${shard}`:''}] ${msg}`))
-ctx.events.on('warn', (msg, shard) => console.log(`[WARN${!isNaN(shard)? ` SH${shard}`:''}] ${msg}`))
-ctx.events.on('error', (msg, shard) => console.error(`[ERR${!isNaN(shard)? ` SH${shard}`:''}]`, msg))
+ctx.events.on('info', (msg, shard) => console.log(`[INFO] ${msg}`))
+ctx.events.on('warn', (msg, shard) => console.log(`[WARN] ${msg}`))
+ctx.events.on('error', (msg, shard) => console.error(`[ERR]`, msg))
 
 module.exports = ctx

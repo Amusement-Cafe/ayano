@@ -29,6 +29,6 @@ const createInterface = (ctx) => {
     })
 }
 
-cmd(['watch'], createInterface)
-cmd(['start'], createInterface)
 cmd(['default'], createInterface)
+
+module.exports = { createInterface }

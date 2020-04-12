@@ -1,8 +1,9 @@
-const { requireOrDefault } = require('../core/utils')
+const { requireOrDefault }  = require('./utils')
+const { createInterface }   = require('../modules/cli')
 
-const withConfig = callback => (ctx, argv) => {
+const withConfig = callback => (ctx, ...args) => {
     if(ctx.config)
-        return callback(ctx, argv)
+        return callback(ctx, ...args)
 
     ctx.info(`Getting config on path '${ctx.configPath}'`)
     const cfg = requireOrDefault(`${ctx.configPath}`)
@@ -13,12 +14,12 @@ const withConfig = callback => (ctx, argv) => {
     ctx.config = cfg
     ctx.config.shard.database = cfg.database
 
-    return callback(ctx, argv)
+    return callback(ctx, ...args)
 }
 
-const withData = callback => (ctx, argv) => {
+const withData = callback => (ctx, ...args) => {
     if(ctx.data)
-        return callback(ctx, argv)
+        return callback(ctx, ...args)
 
     ctx.info(`Performing data check on path '${ctx.dataPath}'`)
     const cards = requireOrDefault(`${ctx.dataPath}/cards`)
@@ -28,27 +29,21 @@ const withData = callback => (ctx, argv) => {
         return ctx.error(`Cards and collections are required to start a cluster.
             Please make sure you run [ayy update] first to get the data`)
 
-    const items = requireOrDefault(`${ctx.dataPath}/items`, [])
-    const help = requireOrDefault(`${ctx.dataPath}/help`, [])
-    const achievements = requireOrDefault(`${ctx.dataPath}/achievements`, [])
-    const quests = requireOrDefault(`${ctx.dataPath}/quests`, {daily: []})
+    const bannedwords = []
     const promos = requireOrDefault(`${ctx.dataPath}/promos`, [])
     const boosts = requireOrDefault(`${ctx.dataPath}/boosts`, [])
 
-    if(items.length === 0 || help.length === 0)
-        return ctx.warn(`Some data appears to be empty. Some bot functions will be limited`)
+    ctx.data = { cards, collections, bannedwords, promos, boosts }
 
-    ctx.data = { cards, collections, items, achievements, help, promos, boosts }
-
-    return callback(ctx, argv)
+    return callback(ctx, ...args)
 }
 
-const withDB = callback => async (ctx, argv) => {
+const withDB = callback => async (ctx, ...args) => {
     if(!ctx.config)
         return ctx.error(`Config is required to connect to database. Please provide config first`)
 
     if(ctx.mcn)
-        return callback(ctx, argv)
+        return callback(ctx, ...args)
 
     ctx.info(`Connecting to database`)
     const mongoUri = ctx.config.database
@@ -57,7 +52,14 @@ const withDB = callback => async (ctx, argv) => {
     ctx.mcn = await require('mongoose').connect(mongoUri, mongoOpt)
     ctx.info(`Successfully connected.`)
 
-    return callback(ctx, argv)
+    return callback(ctx, ...args)
 }
 
-module.exports = { withConfig, withData, withDB }
+const withCLI = callback => async (ctx, ...args) => {
+    if(!ctx.allowExit)
+        createInterface(ctx)
+
+    return callback(ctx, ...args)
+}
+
+module.exports = { withConfig, withData, withDB, withCLI }
