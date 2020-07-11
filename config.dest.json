@@ -1,0 +1,30 @@
+{
+    "grouptimeout": 1000,
+    "tick": 2500,
+    "shards": 1,
+    "database": "",
+    "shard": {
+        "token": "",
+        "reportchannel": "",
+        "prefix": "->",
+        "baseurl": "https://amusementclub.nyc3.cdn.digitaloceanspaces.com",
+        "shorturl": "https://amuse.noxc.dev",
+        "daily": 72000000,
+        "auditc": {
+            "channel": ""
+        }
+    },
+    "ayanobot": {
+        "token": "",
+        "prefix": "ayy",
+        "reportchannel": "",
+        "admins": []
+    },
+    "aws": {
+        "endpoint": "nyc3.digitaloceanspaces.com",
+        "bucket": "amusementclub",
+        "s3accessKeyId": "",
+        "s3secretAccessKey": "",
+        "cardroot": "cards/"
+    }
+}

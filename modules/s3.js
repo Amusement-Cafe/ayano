@@ -93,7 +93,6 @@ const getoptions = (ctx, ...argv) => {
         ], { argv, stopAtFirstUnknown: true })
 
     const info = []
-    console.log(options)
     if(options.col) {
         const cols = ctx.data.collections.filter(x => options.col.includes(x.id))
 
