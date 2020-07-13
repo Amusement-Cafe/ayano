@@ -33,6 +33,9 @@ const withData = callback => (ctx, ...args) => {
     const promos = requireOrDefault(`${ctx.dataPath}/promos`, [])
     const boosts = requireOrDefault(`${ctx.dataPath}/boosts`, [])
 
+    for(let i = 0, ln = cards.length; i < ln; i++){
+        cards[i].id = i
+    }
     ctx.data = { cards, collections, bannedwords, promos, boosts }
 
     return callback(ctx, ...args)

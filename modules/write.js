@@ -44,4 +44,11 @@ const promos = (ctx) => {
     fs.writeFileSync(`${ctx.dataPath}/promos.json`, JSON.stringify(list, null, 2))
 }
 
-module.exports= { collections, cards, promos }
+const boosts = (ctx) => {
+    ctx.info('Writing boosts and boosts to disk...')
+    ctx.events.emit('boostupdate', ctx.data.boosts)
+
+    fs.writeFileSync(`${ctx.dataPath}/boosts.json`, JSON.stringify(ctx.data.boosts, null, 2))
+}
+
+module.exports= { collections, cards, promos, boosts }

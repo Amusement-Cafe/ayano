@@ -49,7 +49,7 @@ const create = withConfig((ctx) => {
                     await endStack()
                 }
 
-                tmpnotice = await bot.createMessage(replych, { embed: { description: `Executing...`, color: colors.yellow } })
+                //tmpnotice = await bot.createMessage(replych, { embed: { description: `Executing...`, color: colors.yellow } })
                 msgstack = embed
             }
 
