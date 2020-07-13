@@ -14,13 +14,13 @@ const colors = {
     blue: 1420012,
 }
 
-var bot, connected
+var bot, connected, msgstack
 
 const create = withConfig((ctx) => {
 
     ctx.allowExit = false
     bot = new Eris(ctx.config.ayanobot.token)
-    var replych = ctx.config.ayanobot.reportchannel, lastmsg, tm
+    var replych = ctx.config.ayanobot.reportchannel, msgstack, tm, tmpnotice
 
     const prefix = ctx.config.ayanobot.prefix
     const send = async (content, col) => {
@@ -28,25 +28,40 @@ const create = withConfig((ctx) => {
 
         try {
             const color = col || colors.blue
-            if(lastmsg && lastmsg.embed.color === color) {
-                lastmsg.embed.description += `\n${content}`
-                await bot.editMessage(lastmsg.ch, lastmsg.id, { embed: lastmsg.embed })
+            const embed = { description: content, color }
+
+            const endStack = async () => {
+                await bot.createMessage(replych, { embed: msgstack })
+                msgstack = null
+
+                if(tmpnotice) {
+                    await bot.deleteMessage(replych, tmpnotice.id)
+                    tmpnotice = null
+                }
+            }
+
+            if(msgstack && msgstack.color === color) {
+                msgstack.description += `\n${content}`
+                //await bot.editMessage(msgstack.ch, msgstack.id, { embed: msgstack.embed })
             } else {
-                const embed = { description: content, color }
-                const msg = await bot.createMessage(replych, { embed })
-                lastmsg = { id: msg.id, ch: msg.channel.id, embed }
+                if(msgstack && msgstack.color != color) {
+                    clearTimeout(tm)
+                    await endStack()
+                }
+
+                tmpnotice = await bot.createMessage(replych, { embed: { description: `Executing...`, color: colors.yellow } })
+                msgstack = embed
             }
 
             clearTimeout(tm)
-            tm = setTimeout(() => lastmsg = null, ctx.config.grouptimeout)
+            tm = setTimeout(() => endStack(), ctx.config.grouptimeout)
+
         } catch(e) { ctx.error(e) }
     } 
 
-    const format = (msg, shard) => `${!isNaN(shard)? `[SH${shard}] `:''}${msg}` 
-
-    events.on('info', (msg, shard) => send(format(msg, shard), colors.green))
-    events.on('warn', (msg, shard) => send(format(msg, shard), colors.yellow))
-    events.on('error', (msg, shard) => send(format(msg, shard), colors.red))
+    events.on('info', (msg, shard) => send(msg, colors.green))
+    events.on('warn', (msg, shard) => send(msg, colors.yellow))
+    events.on('error', (msg, shard) => send(msg, colors.red))
 
     /* events */
     bot.on('ready', async event => {
@@ -66,7 +81,7 @@ const create = withConfig((ctx) => {
 
         if(msg.content.toLowerCase().trim() === prefix)
             return bot.createMessage(msg.channel.id, 'lmao')
-        
+
         if(!isadmin) return
 
         try {
