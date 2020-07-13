@@ -6,5 +6,6 @@ require('./cli')
 require('./s3')
 require('./misc')
 require('./promo')
+require('./utils')
 
 module.exports = { }

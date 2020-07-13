@@ -50,7 +50,28 @@ const withDB = callback => async (ctx, ...args) => {
     const mongoOpt = {useNewUrlParser: true, useUnifiedTopology: true}
 
     ctx.mcn = await require('mongoose').connect(mongoUri, mongoOpt)
-    ctx.info(`Successfully connected.`)
+    ctx.info(`Successfully connected to database`)
+
+    return callback(ctx, ...args)
+}
+
+const withS3 = callback => async (ctx, ...args) => {
+    if(!ctx.config)
+        return ctx.error(`Config is required to establish connection to spaces`)
+
+    if(ctx.s3)
+        return callback(ctx, ...args)
+
+    ctx.info(`Connecting to spaces`)
+    const AWS = require('aws-sdk')
+    const conf = ctx.config.aws
+    const endpoint = new AWS.Endpoint(conf.endpoint)
+    ctx.s3 = new AWS.S3({
+        endpoint, 
+        accessKeyId: conf.s3accessKeyId, 
+        secretAccessKey: conf.s3secretAccessKey
+    })
+    ctx.info(`Successfully connected to spaces`)
 
     return callback(ctx, ...args)
 }
@@ -62,4 +83,4 @@ const withCLI = callback => async (ctx, ...args) => {
     return callback(ctx, ...args)
 }
 
-module.exports = { withConfig, withData, withDB, withCLI }
+module.exports = { withConfig, withData, withDB, withCLI, withS3 }

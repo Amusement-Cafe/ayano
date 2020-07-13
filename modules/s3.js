@@ -1,32 +1,19 @@
 
-const AWS               = require('aws-sdk')
 const { cmd }           = require('../core/cmd')
 const commandLineArgs   = require('command-line-args')
 const write             = require('./write')
 
 const { 
     withConfig,
-    withData 
+    withData,
+    withS3
 } = require('../core/with')
 
 
 const acceptedExts = ['png', 'gif', 'jpg']
 
-var s3, endpoint, conf
-
-const create = (ctx) => {
-    conf = ctx.config.aws
-    endpoint = new AWS.Endpoint(conf.endpoint)
-    s3 = new AWS.S3({
-        endpoint, 
-        accessKeyId: conf.s3accessKeyId, 
-        secretAccessKey: conf.s3secretAccessKey
-    })
-}
-
 const update = async (ctx, ...args) => {
-    if(!s3) create(ctx)
-
+    const conf = ctx.config.aws
     ctx.warn(`Initializing card update...`)
 
     const options = getoptions(ctx, ...args)
@@ -36,7 +23,7 @@ const update = async (ctx, ...args) => {
     do {
         try {
             let count = 0
-            data = await listObjectsAsync(params)
+            data = await listObjectsAsync(ctx, params)
             params.Marker = data.Contents[data.Contents.length - 1].Key
 
             data.Contents.filter(x => x.Key.startsWith(options.promo? 'promo/' : conf.cardroot)).map(x => {
@@ -84,6 +71,31 @@ const update = async (ctx, ...args) => {
     ctx.info(`All data was checked and saved`)
 }
 
+const rename = async (ctx, oldKey, newKey) => {
+    const conf = ctx.config.aws
+    console.log(oldKey)
+    console.log(newKey)
+    try {
+        await ctx.s3.copyObject({
+            Bucket: conf.bucket, 
+            CopySource: `${conf.bucket}/${oldKey}`, 
+            Key: newKey,
+            ACL:'public-read'
+        }).promise()
+
+        await ctx.s3.deleteObject({
+            Bucket: conf.bucket, 
+            Key: oldKey
+        }).promise()
+
+        return 1
+    } catch(e) {
+        ctx.error(e)
+    }
+
+    return 0
+}
+
 const getoptions = (ctx, ...argv) => {
     if(!argv) return {}
 
@@ -113,7 +125,7 @@ const getoptions = (ctx, ...argv) => {
 }
 
 const listObjectsAsync = (params) => new Promise((resolve, reject) => { 
-    s3.listObjects(params, (err, data) => { 
+    ctx.s3.listObjects(params, (err, data) => { 
         if(err){
             reject(err) 
         } else {
@@ -139,4 +151,8 @@ const getCardObject = (name, collection) => {
     }
 }
 
-cmd(['update'], withConfig(withData(update)))
+cmd(['update'], withConfig(withData(withS3(update))))
+
+module.exports = { 
+    rename: withConfig(withS3(rename))
+}
