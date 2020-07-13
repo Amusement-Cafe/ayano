@@ -24,6 +24,7 @@ const ctx = {
 
             mainOptions.command = mainOptions.command || 'default'*/
 
+            argv = argv.filter(n => n)
             await trigger(ctx, argv)
 
             if(ctx.allowExit) process.exit(0)
