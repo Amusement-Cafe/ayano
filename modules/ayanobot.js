@@ -23,12 +23,12 @@ const create = withConfig((ctx) => {
     var replych = ctx.config.ayanobot.reportchannel, msgstack, tm, tmpnotice
 
     const prefix = ctx.config.ayanobot.prefix
-    const send = async (content, col) => {
+    const send = async (content, col, title) => {
         if(!connected) return;
 
         try {
             const color = col || colors.blue
-            const embed = { description: content, color }
+            const embed = { description: content, color, title }
 
             const endStack = async () => {
                 await bot.createMessage(replych, { embed: msgstack })
@@ -59,9 +59,14 @@ const create = withConfig((ctx) => {
         } catch(e) { ctx.error(e) }
     } 
 
-    events.on('info', (msg, shard) => send(msg, colors.green))
-    events.on('warn', (msg, shard) => send(msg, colors.yellow))
-    events.on('error', (msg, shard) => send(msg, colors.red))
+    events.on('info', (msg, title) => send(msg, colors.green, title))
+    events.on('warn', (msg, title) => send(msg, colors.yellow, title))
+    events.on('error', (err) => {
+        if(err.message && err.stack)
+            send(err.stack, colors.red, err.message)
+        else 
+            send(err, colors.red)
+    })
 
     /* events */
     bot.on('ready', async event => {

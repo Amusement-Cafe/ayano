@@ -11,9 +11,9 @@ const ctx = {
     dataPath: path.resolve(path.join(__dirname, '..', 'data')),
     configPath: path.resolve(path.join(__dirname, '..', 'config')),
 
-    info: (msg, shard) => events.emit('info', msg, shard),
-    warn: (msg, shard) => events.emit('warn', msg, shard),
-    error: (msg, shard) => events.emit('error', msg, shard),
+    info: (msg, title) => events.emit('info', msg, title),
+    warn: (msg, title) => events.emit('warn', msg, title),
+    error: (msg, title) => events.emit('error', msg, title),
 
     allowExit: true,
 
@@ -35,8 +35,8 @@ const ctx = {
     }
 }
 
-ctx.events.on('info', (msg, shard) => console.log(`[INFO] ${msg}`))
-ctx.events.on('warn', (msg, shard) => console.log(`[WARN] ${msg}`))
-ctx.events.on('error', (msg, shard) => console.error(`[ERR]`, msg))
+ctx.events.on('info', (msg, title = "") => console.log(`[INFO] ${title}: ${msg}`))
+ctx.events.on('warn', (msg, title = "") => console.log(`[WARN] ${title}: ${msg}`))
+ctx.events.on('error', (msg) => console.error(`[ERR]`, msg))
 
 module.exports = ctx

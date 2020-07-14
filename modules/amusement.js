@@ -2,10 +2,10 @@
 * Support for starting and managing amusement club cluster
 * Used by CLI and bot
 */
-
-const amusement = require('amusementclub2.0')
+ 
 const { cmd }   = require('../core/cmd')
 const events    = require('../core/events')
+const reload    = require('require-reload')(require)
 
 const { 
     withConfig, 
@@ -13,10 +13,11 @@ const {
     withCLI 
 }  = require('../core/with')
 
-var instance, connected
+var instance, connected, amusement
 
 const create = async (ctx) => {
 
+    amusement = reload('amusementclub2.0')
     ctx.allowExit = false
     const options  = Object.assign({shards: ctx.config.shards, data: ctx.data}, ctx.config.shard)
     instance = await amusement.create(options)
@@ -29,9 +30,9 @@ const create = async (ctx) => {
     events.on('cardupdate', (data) => instance.updateCards(data))
 }
 
-const startBot = async (ctx, argv) => {
+const startBot = async (ctx) => {
     if(connected)
-        return await ctx.error(`Amusement bot is already running`)
+        return await ctx.error(`**Amusement bot** is already running`)
     
     if(!instance) await create(ctx)
 
@@ -41,12 +42,32 @@ const startBot = async (ctx, argv) => {
 
 const disconnect = async (ctx) => {
     if(!connected)
-        return await ctx.error(`Amusement bot is not running`)
+        return await ctx.error(`**Amusement bot** is not running`)
 
     await instance.disconnect()
-    await ctx.warn(`Amusement bot was disconnected`)
+    await ctx.warn(`**Amusement bot** was disconnected`)
     connected = false
+}
+
+const restart = async (ctx) => {
+    if(!connected)
+        return await ctx.error(`**Amusement bot** is not running`)
+    
+    await disconnect(ctx)
+    instance = null
+    reload.emptyCache(amusement)
+
+    await startBot(ctx)
+    await ctx.info(`Restarted **Amusement bot**`)
+}
+
+const reconnect = async (ctx) => {
+    await disconnect(ctx)
+    await startBot(ctx)
+    await ctx.info(`Restarted Amusement bot connection to Discord`)
 }
 
 cmd(['start'], withCLI(withConfig(withData(startBot))))
 cmd(['stop'], disconnect)
+cmd(['restart'], restart)
+cmd(['reconnect'], reconnect)
