@@ -17,12 +17,12 @@ var instance, connected, amusement
 
 const create = async (ctx) => {
 
-    amusement = reload('amusementclub2.0')
+    amusement = require('amusementclub2.0')
     ctx.allowExit = false
     const options  = Object.assign({shards: ctx.config.shards, data: ctx.data}, ctx.config.shard)
     instance = await amusement.create(options)
 
-    instance.emitter.on('info', ctx.info)
+    instance.emitter.on('info', (msg, title) => ctx.info(`[Amusement] ${msg}`, title))
     instance.emitter.on('error', ctx.error)
 
     events.on('quit', () => disconnect(ctx))
@@ -52,7 +52,7 @@ const disconnect = async (ctx) => {
 const restart = async (ctx) => {
     if(!connected)
         return await ctx.error(`**Amusement bot** is not running`)
-    
+
     await disconnect(ctx)
     instance = null
     reload.emptyCache(amusement)
@@ -62,6 +62,9 @@ const restart = async (ctx) => {
 }
 
 const reconnect = async (ctx) => {
+    if(!connected)
+        return await ctx.error(`**Amusement bot** is not running`)
+
     await disconnect(ctx)
     await startBot(ctx)
     await ctx.info(`Restarted Amusement bot connection to Discord`)

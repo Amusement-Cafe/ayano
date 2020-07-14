@@ -72,7 +72,7 @@ const create = withConfig((ctx) => {
     bot.on('ready', async event => {
         connected = true
 
-        ctx.info('AyanoBOT connected and ready')
+        ctx.info('**Ayano bot** connected and ready')
         await bot.editStatus('online', { name: 'over you', type: 3})
     })
 
@@ -117,7 +117,7 @@ const create = withConfig((ctx) => {
 
 const startbot = async(ctx, argv) => {
     if(connected)
-        return await ctx.error(`AyanoBOT is already running`)
+        return await ctx.error(`**Ayano bot** is already running`)
 
     if(!bot) create(ctx)
     
@@ -126,10 +126,10 @@ const startbot = async(ctx, argv) => {
 
 const disconnect = async (ctx) => {
     if(!connected)
-        return await ctx.error(`AyanoBOT is not running`)
+        return await ctx.error(`**Ayano bot** is not running`)
 
     await bot.disconnect()
-    await ctx.warn('AyanoBOT was disconnected')
+    await ctx.warn('**Ayano bot** was disconnected')
     connected = false
 }
 
