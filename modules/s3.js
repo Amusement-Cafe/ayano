@@ -23,7 +23,7 @@ const update = async (ctx, ...args) => {
     do {
         try {
             let count = 0
-            data = await listObjectsAsync(ctx, params)
+            data = await ctx.s3.listObjects(params).promise()
             params.Marker = data.Contents[data.Contents.length - 1].Key
 
             data.Contents.filter(x => x.Key.startsWith(options.promo? 'promo/' : conf.cardroot)).map(x => {
@@ -123,16 +123,6 @@ const getoptions = (ctx, ...argv) => {
 
     return options
 }
-
-const listObjectsAsync = (params) => new Promise((resolve, reject) => { 
-    ctx.s3.listObjects(params, (err, data) => { 
-        if(err){
-            reject(err) 
-        } else {
-            resolve(data)
-        }
-    })
-})
 
 const getCardObject = (name, collection) => {
     name = name

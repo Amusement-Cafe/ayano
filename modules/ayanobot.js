@@ -31,8 +31,9 @@ const create = withConfig((ctx) => {
             const embed = { description: content, color, title }
 
             const endStack = async () => {
-                await bot.createMessage(replych, { embed: msgstack })
+                const embed = { embed: msgstack }
                 msgstack = null
+                await bot.createMessage(replych, embed)
 
                 if(tmpnotice) {
                     await bot.deleteMessage(replych, tmpnotice.id)
