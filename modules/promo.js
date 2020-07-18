@@ -22,7 +22,7 @@ const addPromo = async (ctx, ...args) => {
         { name: 'start', alias: 's', type: x => Date.parse(x) },
         { name: 'end', alias: 'e', type: x => Date.parse(x) },
         { name: 'currency', alias: 'c', type: String },
-    ], { args })
+    ], { argv: args })
 
     if(!options.src)
         return ctx.error('--src parameter is required (source collection)')
