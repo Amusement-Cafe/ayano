@@ -10,6 +10,9 @@
         "baseurl": "https://amusementclub.nyc3.cdn.digitaloceanspaces.com",
         "shorturl": "https://amuse.noxc.dev",
         "daily": 72000000,
+        "debug": false,
+        "invite": "",
+        "maintenance ": false,
         "auditc": {
             "channel": ""
         }
