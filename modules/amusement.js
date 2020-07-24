@@ -28,6 +28,9 @@ const create = async (ctx) => {
     events.on('quit', () => disconnect(ctx))
     events.on('colupdate', (data) => instance.updateCols(data))
     events.on('cardupdate', (data) => instance.updateCards(data))
+    events.on('promoupdate', (data) => instance.updatePromos(data))
+    events.on('boostupdate', (data) => instance.updateBoosts(data))
+    events.on('wordsupdate', (data) => instance.updateWords(data))
 }
 
 const startBot = async (ctx) => {

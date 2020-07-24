@@ -29,7 +29,7 @@ const withData = callback => (ctx, ...args) => {
         return ctx.error(`Cards and collections are required to start a cluster.
             Please make sure you run [ayy update] first to get the data`)
 
-    const bannedwords = []
+    const bannedwords = requireOrDefault(`${ctx.dataPath}/bannedwords`, [])
     const promos = requireOrDefault(`${ctx.dataPath}/promos`, [])
     const boosts = requireOrDefault(`${ctx.dataPath}/boosts`, [])
 

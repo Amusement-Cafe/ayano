@@ -53,4 +53,31 @@ const rename = async (ctx, ...args) => {
         ctx.info(`Failed to rename card file, see the errors above`)
 }
 
+const banword = async (ctx, ...args) => {
+    const word = args.join('_')
+
+    if(ctx.data.bannedwords.some(x => x === word))
+        return ctx.error(`Banned word list already contains \`${word}\``)
+
+    ctx.data.bannedwords.push(word)
+    await write.words(ctx)
+
+    ctx.info(`Added \`${word}\` to the list of banned words`)
+}
+
+const unbanword = async (ctx, ...args) => {
+    const word = args.join('_')
+
+    if(!ctx.data.bannedwords.some(x => x === word))
+        return ctx.error(`Banned word list doesn't contain \`${word}\``)
+
+    ctx.data.bannedwords = ctx.data.bannedwords.filter(x => x != word)
+    await write.words(ctx)
+    console.log(ctx.data.bannedwords)
+
+    ctx.info(`Removed \`${word}\` from the list of banned words`)
+}
+
 cmd(['rename'], withData(rename))
+cmd(['banword'], withData(banword))
+cmd(['unbanword'], withData(unbanword))

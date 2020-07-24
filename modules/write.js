@@ -31,7 +31,7 @@ const cards = (ctx) => {
 }
 
 const promos = (ctx) => {
-    ctx.info('Writing promos and boosts to disk...')
+    ctx.info('Writing promos to disk...')
     ctx.events.emit('promoupdate', ctx.data.promos)
 
     const list = ctx.data.promos.map(x => ({
@@ -45,10 +45,17 @@ const promos = (ctx) => {
 }
 
 const boosts = (ctx) => {
-    ctx.info('Writing boosts and boosts to disk...')
+    ctx.info('Writing boosts to disk...')
     ctx.events.emit('boostupdate', ctx.data.boosts)
 
     fs.writeFileSync(`${ctx.dataPath}/boosts.json`, JSON.stringify(ctx.data.boosts, null, 2))
 }
 
-module.exports= { collections, cards, promos, boosts }
+const words = (ctx) => {
+    ctx.info('Writing banned words list to disk...')
+    ctx.events.emit('wordsupdate', ctx.data.bannedwords)
+
+    fs.writeFileSync(`${ctx.dataPath}/bannedwords.json`, JSON.stringify(ctx.data.bannedwords, null, 2))
+}
+
+module.exports = { collections, cards, promos, boosts, words }
