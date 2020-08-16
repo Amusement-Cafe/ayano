@@ -1,4 +1,6 @@
 
+const fs = require('fs')
+
 const requireOrDefault = (module, def) => {
     try {
         return require(module)
@@ -10,6 +12,16 @@ const requireOrDefault = (module, def) => {
     }
 }
 
+const readOrDefault = (module, def) => {
+    try {
+        const rawdata = fs.readFileSync(`${module}.json`);
+        return JSON.parse(rawdata);
+    } catch (e) {
+        return def
+    }
+}
+
 module.exports = {
-    requireOrDefault
+    requireOrDefault,
+    readOrDefault
 }

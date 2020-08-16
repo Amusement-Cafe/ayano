@@ -1,4 +1,7 @@
-const { requireOrDefault }  = require('./utils')
+const { 
+    requireOrDefault,
+    readOrDefault,
+} = require('./utils')
 const { createInterface }   = require('../modules/cli')
 
 const withConfig = callback => (ctx, ...args) => {
@@ -22,16 +25,16 @@ const withData = callback => (ctx, ...args) => {
         return callback(ctx, ...args)
 
     ctx.info(`Performing data check on path '${ctx.dataPath}'`)
-    const cards = requireOrDefault(`${ctx.dataPath}/cards`)
-    const collections = requireOrDefault(`${ctx.dataPath}/collections`)
+    const cards = readOrDefault(`${ctx.dataPath}/cards`)
+    const collections = readOrDefault(`${ctx.dataPath}/collections`)
 
     if(!cards || !collections)
         return ctx.error(`Cards and collections are required to start a cluster.
             Please make sure you run [ayy update] first to get the data`)
 
-    const bannedwords = requireOrDefault(`${ctx.dataPath}/bannedwords`, [])
-    const promos = requireOrDefault(`${ctx.dataPath}/promos`, [])
-    const boosts = requireOrDefault(`${ctx.dataPath}/boosts`, [])
+    const bannedwords = readOrDefault(`${ctx.dataPath}/bannedwords`, [])
+    const promos = readOrDefault(`${ctx.dataPath}/promos`, [])
+    const boosts = readOrDefault(`${ctx.dataPath}/boosts`, [])
 
     for(let i = 0, ln = cards.length; i < ln; i++) {
         cards[i].id = i
