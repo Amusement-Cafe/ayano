@@ -79,9 +79,14 @@ const addBoost = async (ctx, ...args) => {
 
     const parsedargs = modules.card.parseArgs({
         cards: ctx.data.cards,
-        collections: ctx.data.collections
+        collections: ctx.data.collections,
     }, options.query.replace(/"/g, '').split(' '))
+
     const cards = modules.card.filter(ctx.data.cards, parsedargs)
+        .filter(x => [1,2,3].includes(x.level))
+
+    if(cards.length == 0)
+        return ctx.error(`Could not find any 1-3star cards matching that request`)
 
     const boost = {
         id: options.id,
