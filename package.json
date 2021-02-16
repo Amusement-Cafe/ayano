@@ -11,15 +11,15 @@
   "author": "noxcaos",
   "license": "ISC",
   "dependencies": {
-    "amusementclub2.0": "file:../amusementClub2.0",
-    "aws-sdk": "^2.583.0",
+    "amusementclub2.0": "file:../amusementclub2.0",
+    "aws-sdk": "^2.844.0",
     "command-line-args": "^5.1.1",
     "datejs": "^1.0.0-rc3",
-    "eris": "^0.11.2",
-    "inquirer": "^7.0.4",
-    "lodash": "^4.17.19",
-    "mongodb": "^3.5.2",
-    "mongoose": "^5.8.9",
+    "eris": "^0.14.0",
+    "inquirer": "^7.3.3",
+    "lodash": "^4.17.20",
+    "mongodb": "^3.6.4",
+    "mongoose": "^5.11.16",
     "require-reload": "^0.2.2"
   },
   "bin": {
