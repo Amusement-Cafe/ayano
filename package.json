@@ -16,6 +16,7 @@
     "command-line-args": "^5.1.1",
     "datejs": "^1.0.0-rc3",
     "eris": "^0.14.0",
+    "forever-monitor": "^3.0.3",
     "inquirer": "^7.3.3",
     "lodash": "^4.17.20",
     "mongodb": "^3.6.4",

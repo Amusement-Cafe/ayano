@@ -2,7 +2,9 @@ const tree = {}
 
 const cmd = (...args) => buildTree(args)
 
-const buildTree = (args) => {
+const pcmd = (perm, ...args) => buildTree(args, perm)
+
+const buildTree = (args, perm) => {
     const callback = args.pop()
     const cursors = []
 
@@ -19,11 +21,15 @@ const buildTree = (args) => {
         })
 
         cursor._callback = callback
+
+        if(perm)
+            cursor._perm = perm
+
         cursors.push(cursor)
     })
 }
 
-const trigger = (ctx, args) => {
+const trigger = (ctx, args, type) => {
     let cursor = tree
 
     if(args.length === 0)
@@ -38,7 +44,12 @@ const trigger = (ctx, args) => {
         return ctx.error(`Unknown command tree '${args.join(' ')}'`)
     }
 
+    if (cursor._perm) {
+        if(!type || !cursor._perm.find(x => x === type))
+            return ctx.error(`Only users with ayano roles **[${cursor._perm}]** can execute this command`)
+    }
+
     return cursor._callback.apply({}, [ctx].concat(args))
 }
 
-module.exports = { cmd, trigger }
+module.exports = { cmd, pcmd, trigger }

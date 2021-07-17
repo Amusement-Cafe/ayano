@@ -78,19 +78,21 @@ const create = withConfig((ctx) => {
     })
 
     bot.on('messageCreate', async (msg) => {
+        msg.content = msg.content.toLowerCase()
         if (!msg.content.startsWith(prefix)) return;
         if (msg.author.bot) return;
-        msg.content = msg.content.toLowerCase()
 
         const isadmin = ctx.config.ayanobot.admins.includes(msg.author.id)
-        //const ismod = TODO
+        const ismod = ctx.config.ayanobot.mods.includes(msg.author.id)
 
         if(msg.content.toLowerCase().trim() === prefix)
             return bot.createMessage(msg.channel.id, 'lmao')
 
-        if(!isadmin) return
+
+        if(!isadmin && !ismod) return
 
         try {
+            let type = isadmin? 'admin': 'mod'
             const args = msg.content.trim()
                 .toLowerCase()
                 .substring(prefix.length + 1)
@@ -99,7 +101,7 @@ const create = withConfig((ctx) => {
                 .filter(x => x)
 
             replych = msg.channel.id
-            await ctx.input(args)
+            await ctx.input(args, type)
             replych = ctx.config.ayanobot.reportchannel
         } catch(e) {
             ctx.error(e)

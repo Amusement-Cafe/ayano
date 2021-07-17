@@ -21,7 +21,8 @@
         "token": "",
         "prefix": "ayy",
         "reportchannel": "",
-        "admins": []
+        "admins": [],
+        "mods": []
     },
     "aws": {
         "endpoint": "nyc3.digitaloceanspaces.com",
