@@ -78,6 +78,6 @@ const unbanword = async (ctx, ...args) => {
     ctx.info(`Removed \`${word}\` from the list of banned words`)
 }
 
-pcmd(['admin', 'mod'], ['rename'], withData(rename))
+pcmd(['admin', 'cardmod'], ['rename'], withData(rename))
 pcmd(['admin', 'mod'], ['banword'], withData(banword))
 pcmd(['admin', 'mod'], ['unbanword'], withData(unbanword))

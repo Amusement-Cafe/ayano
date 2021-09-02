@@ -141,7 +141,7 @@ const getCardObject = (name, collection) => {
     }
 }
 
-pcmd(['admin'], ['update'], withConfig(withData(withS3(update))))
+pcmd(['admin', 'cardmod'], ['update'], withConfig(withData(withS3(update))))
 
 module.exports = { 
     rename: withConfig(withS3(rename))
