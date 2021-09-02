@@ -1,5 +1,5 @@
 
-const { cmd }           = require('../core/cmd')
+const { pcmd }           = require('../core/cmd')
 const commandLineArgs   = require('command-line-args')
 const write             = require('./write')
 
@@ -141,7 +141,7 @@ const getCardObject = (name, collection) => {
     }
 }
 
-cmd(['update'], withConfig(withData(withS3(update))))
+pcmd(['admin'], ['update'], withConfig(withData(withS3(update))))
 
 module.exports = { 
     rename: withConfig(withS3(rename))

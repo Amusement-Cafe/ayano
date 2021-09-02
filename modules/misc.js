@@ -1,5 +1,5 @@
 
-const { cmd } = require('../core/cmd')
+const { pcmd } = require('../core/cmd')
 const { 
     withData,
 } = require('../core/with')
@@ -26,5 +26,5 @@ const flushdata = (ctx) => {
     })(ctx)
 }
 
-cmd(['stress'], stress)
-cmd(['flushdata'], flushdata)
+pcmd(['admin'],['stress'], stress)
+pcmd(['admin'],['flushdata'], flushdata)
