@@ -18,7 +18,7 @@ const createInterface = (ctx) => {
         if (line === "quit" || line === "q")
             return readLine.close()
 
-        await ctx.input(line.split(' '), 'admin')
+        await ctx.input(line.split(' '), ['admin'])
         readLine.prompt()
 
     }).on('close', async () => {
