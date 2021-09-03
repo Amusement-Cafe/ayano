@@ -1,5 +1,5 @@
 
-const { cmd }       = require('../core/cmd')
+const { pcmd }       = require('../core/cmd')
 const { modules }   = require('amusementclub2.0')
 const write         = require('./write')
 const s3            = require('./s3')
@@ -78,6 +78,6 @@ const unbanword = async (ctx, ...args) => {
     ctx.info(`Removed \`${word}\` from the list of banned words`)
 }
 
-cmd(['rename'], withData(rename))
-cmd(['banword'], withData(banword))
-cmd(['unbanword'], withData(unbanword))
+pcmd(['admin', 'cardmod'], ['rename'], withData(rename))
+pcmd(['admin', 'mod'], ['banword'], withData(banword))
+pcmd(['admin', 'mod'], ['unbanword'], withData(unbanword))

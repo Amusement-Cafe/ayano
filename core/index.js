@@ -17,7 +17,7 @@ const ctx = {
 
     allowExit: true,
 
-    input: async (argv, type) => {
+    input: async (argv, roles) => {
         try {
             /*const mainOptions = commandLineArgs(
                 [{ name: 'command', defaultOption: true }], { argv, stopAtFirstUnknown: true })
@@ -25,7 +25,7 @@ const ctx = {
             mainOptions.command = mainOptions.command || 'default'*/
 
             argv = argv.filter(n => n)
-            await trigger(ctx, argv, type)
+            await trigger(ctx, argv, roles)
 
             if(ctx.allowExit) process.exit(0)
         } catch(e) {

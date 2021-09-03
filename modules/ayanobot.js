@@ -1,10 +1,11 @@
 const Eris              = require('eris')
-const { cmd }           = require('../core/cmd')
+const { pcmd }           = require('../core/cmd')
 const events            = require('../core/events')
 
 const { 
     withConfig, 
-    withCLI 
+    withCLI,
+    withDB,
 } = require('../core/with')
 
 const colors = {
@@ -82,17 +83,14 @@ const create = withConfig((ctx) => {
         if (!msg.content.startsWith(prefix)) return;
         if (msg.author.bot) return;
 
-        const isadmin = ctx.config.ayanobot.admins.includes(msg.author.id)
-        const ismod = ctx.config.ayanobot.mods.includes(msg.author.id)
-
         if(msg.content.toLowerCase().trim() === prefix)
             return bot.createMessage(msg.channel.id, 'lmao')
 
+        const user = await ctx.db.collection('users').findOne({discord_id: msg.author.id})
 
-        if(!isadmin && !ismod) return
+        if(!user || user.roles.length === 0) return
 
         try {
-            let type = isadmin? 'admin': 'mod'
             const args = msg.content.trim()
                 .toLowerCase()
                 .substring(prefix.length + 1)
@@ -101,7 +99,7 @@ const create = withConfig((ctx) => {
                 .filter(x => x)
 
             replych = msg.channel.id
-            await ctx.input(args, type)
+            await ctx.input(args, user.roles)
             replych = ctx.config.ayanobot.reportchannel
         } catch(e) {
             ctx.error(e)
@@ -136,5 +134,5 @@ const disconnect = async (ctx) => {
     connected = false
 }
 
-cmd(['watch'], withCLI(withConfig(startbot)))
-cmd(['stopwatch'], disconnect)
+pcmd(['admin'],['watch'], withCLI(withConfig(withDB(startbot))))
+pcmd(['admin'],['stopwatch'], disconnect)

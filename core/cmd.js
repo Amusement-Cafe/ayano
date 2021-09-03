@@ -29,7 +29,7 @@ const buildTree = (args, perm) => {
     })
 }
 
-const trigger = (ctx, args, type) => {
+const trigger = (ctx, args, roles) => {
     let cursor = tree
 
     if(args.length === 0)
@@ -45,7 +45,7 @@ const trigger = (ctx, args, type) => {
     }
 
     if (cursor._perm) {
-        if(!type || !cursor._perm.find(x => x === type))
+        if(!roles || !cursor._perm.find(x => roles.includes(x)))
             return ctx.error(`Only users with ayano roles **[${cursor._perm}]** can execute this command`)
     }
 

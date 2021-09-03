@@ -3,6 +3,7 @@ const {
     readOrDefault,
 } = require('./utils')
 const { createInterface }   = require('../modules/cli')
+const MongoClient           = require('mongodb').MongoClient;
 
 const withConfig = callback => (ctx, ...args) => {
     if(ctx.config)
@@ -60,14 +61,14 @@ const withDB = callback => async (ctx, ...args) => {
     if(!ctx.config)
         return ctx.error(`Config is required to connect to database. Please provide config first`)
 
-    if(ctx.mcn)
+    if(ctx.db)
         return callback(ctx, ...args)
 
     ctx.info(`Connecting to database`)
     const mongoUri = ctx.config.database
     const mongoOpt = {useNewUrlParser: true, useUnifiedTopology: true}
 
-    ctx.mcn = await require('mongoose').connect(mongoUri, mongoOpt)
+    ctx.db = (await MongoClient.connect(mongoUri, mongoOpt)).db('amusement2')
     ctx.info(`Successfully connected to database`)
 
     return callback(ctx, ...args)

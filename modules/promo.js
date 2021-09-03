@@ -3,7 +3,7 @@
 * Used by CLI and bot
 */
 
-const { cmd }           = require('../core/cmd')
+const { pcmd }           = require('../core/cmd')
 const { modules }       = require('amusementclub2.0')
 const { 
     withData,
@@ -103,5 +103,5 @@ const addBoost = async (ctx, ...args) => {
     return ctx.info(`Created new boost: **${boost.name}** with **${boost.cards.length}** cards`)
 }
 
-cmd(['promo'], withData(addPromo))
-cmd(['boost'], withData(addBoost))
+pcmd(['admin'],['promo'], withData(addPromo))
+pcmd(['admin'],['boost'], withData(addBoost))
