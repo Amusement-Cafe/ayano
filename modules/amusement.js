@@ -81,6 +81,7 @@ const reconnect = async (ctx) => {
 
 const gitPull = async (ctx) => {
     let gitLog = ""
+    let gitErr = ""
     try {
         const child = forever.start(['git', 'pull'], {
             cwd: require.cache[require.resolve('amusementclub2.0')].path,
@@ -93,9 +94,15 @@ const gitPull = async (ctx) => {
             gitLog += stdout + '\n'
         })
 
+        child.on('stderr', function (stderr) {
+            gitErr += stderr + '\n'
+        })
+
         child.on('exit', async function (fChild) {
             await ctx.info(gitLog)
-            if (!gitLog.startsWith('Already up to date.'))
+            if (gitErr)
+                await ctx.error(gitErr)
+            if (!gitLog.startsWith('Already up to date.') && !gitErr)
                 await restart(ctx)
         })
     } catch (e) {
