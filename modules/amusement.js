@@ -102,8 +102,6 @@ const gitPull = async (ctx) => {
             await ctx.info(gitLog)
             if (gitErr)
                 await ctx.error(gitErr)
-            if (!gitLog.startsWith('Already up to date.') && !gitErr)
-                await restart(ctx)
         })
     } catch (e) {
         await ctx.error("Error pulling from github\n" + e)
@@ -113,6 +111,6 @@ const gitPull = async (ctx) => {
 
 pcmd(['admin'],['start'], withCLI(withConfig(withData(startBot))))
 pcmd(['admin'],['stop'], disconnect)
-pcmd(['admin', 'mod'],['restart'], restart)
+// pcmd(['admin', 'mod'],['restart'], restart)
 pcmd(['admin'],['reconnect'], reconnect)
 pcmd(['admin'], ['git', 'pull'], gitPull)
