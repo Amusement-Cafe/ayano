@@ -1,7 +1,20 @@
 const fs = require('fs')
+const _  = require('lodash')
 
 const collections = (ctx) => {
     ctx.info('Writing collections to disk...')
+
+    ctx.data.collections = ctx.data.collections.map(x => _.pick(x, [
+        'id',
+        'name',
+        'origin',
+        'aliases',
+        'promo',
+        'compressed',
+        'dateAdded',
+        'author',
+    ]))
+
     ctx.events.emit('colupdate', ctx.data.collections)
 
     fs.writeFileSync(`${ctx.dataPath}/collections.json`, JSON.stringify(ctx.data.collections, null, 2))
@@ -9,6 +22,16 @@ const collections = (ctx) => {
 
 const cards = (ctx) => {
     ctx.info('Writing cards to disk...')
+
+    ctx.data.cards = ctx.data.cards.map(x => _.pick(x, [
+        'name',
+        'level',
+        'animated',
+        'col',
+        'id',
+        'imgur',
+    ]))
+
     ctx.events.emit('cardupdate', ctx.data.cards)
 
     fs.writeFileSync(`${ctx.dataPath}/cards.json`, JSON.stringify(ctx.data.cards, null, 2))

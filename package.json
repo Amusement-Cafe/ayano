@@ -1,6 +1,6 @@
 {
   "name": "ayano",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Manager of Amusement Club Discord game",
   "main": "index.js",
   "repository": "https://github.com/NoxCaos/ayano",
