@@ -38,7 +38,9 @@ const update = async (ctx, ...args) => {
                                 name: split[1],
                                 aliases: [split[1]],
                                 promo: options.promo,
-                                compressed: ext === 'jpg'
+                                compressed: ext === 'jpg',
+                                dateAdded: new Date(),
+                                author: options.author,
                             })
 
                             ctx.info(`New collection: **${split[1]}**`)
@@ -102,6 +104,7 @@ const getoptions = (ctx, ...argv) => {
     const options = commandLineArgs([
             { name: 'col', alias: 'c', type: String, multiple: true, defaultOption: true },
             { name: 'promo', alias:'p', type: Boolean },
+            { name: 'author', alias:'a', type: String },
         ], { argv, stopAtFirstUnknown: true })
 
     const info = []
