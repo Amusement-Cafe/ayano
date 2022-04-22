@@ -32,6 +32,9 @@ const create = withConfig((ctx) => {
             const embed = { description: content, color, title }
 
             const endStack = async () => {
+                if (msgstack.title)
+                    msgstack.title = msgstack.title.substring(0, 255)
+                msgstack.description = msgstack.description.substring(0, 2047)
                 const embed = { embed: msgstack }
                 msgstack = null
                 await bot.createMessage(replych, embed)

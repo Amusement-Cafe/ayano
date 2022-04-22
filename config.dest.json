@@ -4,17 +4,47 @@
     "shards": 1,
     "database": "",
     "shard": {
-        "token": "",
-        "reportchannel": "",
-        "prefix": "->",
-        "baseurl": "https://amusementclub.nyc3.cdn.digitaloceanspaces.com",
+        "token": "DISCORD_VALID_BOT_TOKEN_GOES_HERE",
+        "prefix": "/",
+        "baseurl": "https://amusementclub.nyc3.digitaloceanspaces.com",
         "shorturl": "https://amuse.noxc.dev",
         "daily": 72000000,
         "debug": false,
         "invite": "",
-        "maintenance ": false,
+        "maintenance": true,
+        "auctionLock": false,
+        "uniqueFrequency": 12,
+        "guildLogChannel": "DISCORD_VALID_CHANNEL_ID_GOES_HERE",
+        "adminGuildID": "DISCORD_VALID_GUILD_ID_GOES_HERE",
         "auditc": {
-            "channel": ""
+            "channel": ["DISCORD_VALID_CHANNEL_ID_GOES_HERE", "CAN TAKE MULTIPLE"],
+            "taglogchannel": "DISCORD_VALID_CHANNEL_ID_GOES_HERE"
+        },
+        "evalc": {
+            "cardPrices": [ 30, 80, 150, 400, 1000, 2500 ],
+            "evalUserRate": 0.25,
+            "evalVialRate": 0.055,
+            "aucEval": {
+                "minSamples": 4,
+                "maxSamples": 16,
+                "minBounds": 0.5,
+                "maxBounds": 5.0,
+                "aucFailMultiplier": 0.90,
+                "evalUpdateChannel": "DISCORD_VALID_CHANNEL_ID_GOES_HERE"
+            }
+        },
+        "dbl": {
+            "token": "",
+            "port": 2727,
+            "pass": "",
+            "topggUrl": "",
+            "dblUrl": ""
+        },
+        "analytics": {
+            "mixpanel": ""
+        },
+        "metac": {
+            "sauceNaoToken": ""
         }
     },
     "ayanobot": {
