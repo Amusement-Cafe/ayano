@@ -78,9 +78,10 @@ const addBoost = async (ctx, ...args) => {
         return ctx.error(`Boost with id \`${options.id}\` already exists`)
 
     const parsedargs = modules.card.parseArgs({
+        options: [],
         cards: ctx.data.cards,
-        collections: ctx.data.collections,
-    }, options.query.replace(/"/g, '').split(' '))
+        collections: ctx.data.collections
+    }, null, {name: 'card_query', value: options.query.replace(/"/g, '')})
 
     const cards = modules.card.filter(ctx.data.cards, parsedargs)
         .filter(x => [1,2,3].includes(x.level))

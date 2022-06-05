@@ -22,9 +22,10 @@ const rename = async (ctx, ...args) => {
     const query = parts[0].trim().split(' ')
     const name = parts[1].trim().replace(/\s/g, '_')
     const parsedargs = modules.card.parseArgs({
+        options: [],
         cards: ctx.data.cards,
         collections: ctx.data.collections
-    }, query)
+    }, null, {name: 'card_query', value: query})
 
     const filtered = modules.card.filter(ctx.data.cards, parsedargs)
     const card = modules.card.bestMatch(filtered)
