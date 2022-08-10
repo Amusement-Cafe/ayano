@@ -1,9 +1,9 @@
 {
   "name": "ayano",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Manager of Amusement Club Discord game",
   "main": "index.js",
-  "repository": "https://github.com/NoxCaos/ayano",
+  "repository": "https://github.com/Amusement-Cafe/ayano",
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,11 +15,11 @@
     "aws-sdk": "^2.844.0",
     "command-line-args": "^5.1.1",
     "datejs": "^1.0.0-rc3",
-    "eris": "^0.17.0",
+    "eris": "^0.17.1",
     "inquirer": "^7.3.3",
     "lodash": "^4.17.21",
     "mongodb": "^3.6.4",
-    "mongoose": "^5.11.16",
+    "mongoose": "^6.5.1",
     "require-reload": "^0.2.2"
   },
   "bin": {
