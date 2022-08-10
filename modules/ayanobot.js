@@ -37,7 +37,9 @@ const create = withConfig((ctx) => {
                 msgstack.description = msgstack.description.substring(0, 2047)
                 const embed = { embed: msgstack }
                 msgstack = null
-                await bot.createMessage(replych, embed)
+                try {
+                    await bot.createMessage(replych, embed)
+                } catch (e) { ctx.error(e) }
 
                 if(tmpnotice) {
                     await bot.deleteMessage(replych, tmpnotice.id)
@@ -67,10 +69,15 @@ const create = withConfig((ctx) => {
     events.on('info', (msg, title) => send(msg, colors.green, title))
     events.on('warn', (msg, title) => send(msg, colors.yellow, title))
     events.on('error', (err) => {
-        if(err.message && err.stack)
-            send(err.stack, colors.red, err.message)
-        else 
-            send(err, colors.red)
+        try {
+            if(err.message && err.stack)
+                send(err.stack, colors.red, err.message)
+            else
+                send(err, colors.red)
+        } catch (e) {
+            console.log(e)
+        }
+
     })
 
     /* events */
