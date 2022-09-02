@@ -19,7 +19,7 @@ const rename = async (ctx, ...args) => {
         return ctx.error(`Please specify card query followed by new name divided with ','`)
     }
 
-    const query = parts[0].trim().split(' ')
+    const query = parts[0].trim()
     const name = parts[1].trim().replace(/\s/g, '_')
     const parsedargs = modules.card.parseArgs({
         options: [],
