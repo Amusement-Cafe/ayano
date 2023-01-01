@@ -1,6 +1,6 @@
 {
   "name": "ayano",
-  "version": "0.3.1",
+  "version": "1.0.0",
   "description": "Manager of Amusement Club Discord game",
   "main": "index.js",
   "repository": "https://github.com/Amusement-Cafe/ayano",
@@ -11,7 +11,6 @@
   "author": "noxcaos",
   "license": "ISC",
   "dependencies": {
-    "amusementclub2.0": "file:../amusementclub2.0",
     "aws-sdk": "^2.844.0",
     "command-line-args": "^5.1.1",
     "datejs": "^1.0.0-rc3",
