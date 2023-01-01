@@ -4,8 +4,8 @@
 */
 
 const { pcmd }           = require('../core/cmd')
-const { modules }       = require('amusementclub2.0')
-const { 
+const cardMod            = require('../../amusementclub2.0/modules/card.js')
+const {
     withData,
     withConfig,
     withDB
@@ -77,13 +77,13 @@ const addBoost = async (ctx, ...args) => {
     if(ctx.data.boosts.some(x => x.id === options.id))
         return ctx.error(`Boost with id \`${options.id}\` already exists`)
 
-    const parsedargs = modules.card.parseArgs({
+    const parsedargs = cardMod.parseArgs({
         options: [],
         cards: ctx.data.cards,
         collections: ctx.data.collections
     }, null, {name: 'card_query', value: options.query.replace(/"/g, '')})
 
-    const cards = modules.card.filter(ctx.data.cards, parsedargs)
+    const cards = cardMod.filter(ctx.data.cards, parsedargs)
         .filter(x => [1,2,3].includes(x.level))
 
     if(cards.length == 0)

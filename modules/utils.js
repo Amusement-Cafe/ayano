@@ -1,6 +1,6 @@
 
 const { pcmd }       = require('../core/cmd')
-const { modules }   = require('amusementclub2.0')
+const cardMod       = require('../../amusementclub2.0/modules/card.js')
 const write         = require('./write')
 const s3            = require('./s3')
 
@@ -21,14 +21,14 @@ const rename = async (ctx, ...args) => {
 
     const query = parts[0].trim()
     const name = parts[1].trim().replace(/\s/g, '_')
-    const parsedargs = modules.card.parseArgs({
+    const parsedargs = cardMod.parseArgs({
         options: [],
         cards: ctx.data.cards,
         collections: ctx.data.collections
     }, null, {name: 'card_query', value: query})
 
-    const filtered = modules.card.filter(ctx.data.cards, parsedargs)
-    const card = modules.card.bestMatch(filtered)
+    const filtered = cardMod.filter(ctx.data.cards, parsedargs)
+    const card = cardMod.bestMatch(filtered)
     console.log(card)
 
     if(!card) {
@@ -38,7 +38,7 @@ const rename = async (ctx, ...args) => {
     const oldName = card.name
     card.name = name
     write.cards(ctx)
-    ctx.info(`Updated card with new name ${modules.card.formatName(card)} (old name '${oldName}')`)
+    ctx.info(`Updated card with new name ${cardMod.formatName(card)} (old name '${oldName}')`)
 
     const col = ctx.data.collections.find(x => x.id === card.col)
     let ext = col.compressed? 'jpg' : 'png'
