@@ -7,5 +7,6 @@ require('./s3')
 require('./misc')
 require('./promo')
 require('./utils')
+require('./webhooks')
 
 module.exports = { }

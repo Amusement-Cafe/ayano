@@ -1,4 +1,3 @@
-
 const readline  = require('readline')
 const { cmd }   = require('../core/cmd')
 

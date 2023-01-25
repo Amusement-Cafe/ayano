@@ -111,6 +111,8 @@ All commands besides the first can be run in a server with Ayano and correct per
 
 `reconnect` - This restarts the Amusement Club instance
 
+`listen` - Start the webhook listeners for votes/kofi
+
 `stress` - Sends test messages over the info event bus
 
 `flushdata` - Dumps all data and refreshes it (collections, cards, promos, boosts, banned words)

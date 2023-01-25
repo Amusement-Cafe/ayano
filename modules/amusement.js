@@ -4,7 +4,7 @@
 */
 
 const child           = require('child_process')
-const { cmd, pcmd }   = require('../core/cmd')
+const { pcmd }        = require('../core/cmd')
 const events          = require('../core/events')
 
 const { 
@@ -13,9 +13,9 @@ const {
     withCLI 
 }  = require('../core/with')
 
-let instance, connected, amusement, options, evs
+let queue = [], instance, connected, options, evs
 
-const delay = time => new Promise(res=>setTimeout(res,time));
+const delay = time => new Promise(res=>setTimeout(res,time))
 
 const create = (ctx) => {
 
@@ -73,6 +73,26 @@ const reconnect = async (ctx) => {
     await ctx.info(`Restarted Amusement bot connection to Discord`)
 }
 
+const voteQueue = () => {
+    if (queue.length === 0 || !connected)
+        return
+    try {
+        const qItem = queue[0]
+        instance.send(qItem)
+        queue.shift()
+    } catch (e) { }
+}
+
+const addVoteQueue = (ctx, vote, type) => {
+    queue.push({vote: vote, type: type})
+}
+
+setInterval(voteQueue, 1000)
+
 pcmd(['admin'],['start'], withCLI(withConfig(withData(startBot))))
 pcmd(['admin'],['stop'], disconnect)
 pcmd(['admin'],['reconnect'], reconnect)
+
+module.exports = {
+    addVoteQueue
+}

@@ -11,10 +11,13 @@
   "author": "noxcaos",
   "license": "ISC",
   "dependencies": {
+    "@top-gg/sdk": "^3.1.3",
     "aws-sdk": "^2.844.0",
+    "body-parser": "^1.20.1",
     "command-line-args": "^5.1.1",
     "datejs": "^1.0.0-rc3",
     "eris": "^0.17.1",
+    "express": "^4.18.2",
     "inquirer": "^7.3.3",
     "lodash": "^4.17.21",
     "mongodb": "^3.6.4",
