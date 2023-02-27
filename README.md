@@ -1,3 +1,7 @@
+# This branch is under development and is not meant to be used until this notice is removed
+
+---
+
 **Ayano** is a bot designed to manage [Amusement Club](https://github.com/Amusement-Cafe/amusementclub2.0) and is required for card management, voting webhooks, and remote management of the Amusement Club process.
 
 ## Setup
@@ -8,11 +12,14 @@ Ayano requires AmusementClub2.0 to be downloaded as well and setup in a shared f
     - ayano
         - data
             - cards.json
-            - collections.json  
+            - collections.json
+            - ...
         - config.json
         - index.js
+        - ...
     - amusementclub2.0
         - index.js
+        - ...
 ```
 This layout is required so that Ayano can start and manage the Amusement Club process, and is also used for some file imports from amusement. So do not rename the `amusementclub2.0` folder or some commands may/will break!
 #### Config
@@ -23,66 +30,83 @@ The ayano config is a mix of the development config included with Amusement Club
 The following is taken from `./config.dest.json` but comments are added for clarity
 
 ```json
-    "grouptimeout": 1000,
-    "tick": 2500,
-    "shards": 1, // The number of Amusement Shards
-    "database": "", // Previously in Amusement, move the DB address here, it will be passed to ayano and Amusement
-    "shard": { //This is effectively the config from Amusement Club, with some items moved to the base json
-        "token": "DISCORD_VALID_BOT_TOKEN_GOES_HERE", // This is your Amusement Token
-        "prefix": "/", // Amusement Bot Prefix
-        "baseurl": "https://amusementclub.nyc3.digitaloceanspaces.com", // Card Base URL
-        "shorturl": "https://amuse.noxc.dev", // Card Short URL, if you don't have one, re-use the above
-        "debug": false,
-        "invite": "", // Invite link to support server/some discord server
-        "maintenance": true, // Maintenance is enabled by default and disabled once bot is ready
-        "auctionLock": false, // When enabled, this keeps new auctions from being made
-        "uniqueFrequency": 12, // *Memories of* effects will give a guaranteed missing every X use here
-        "guildLogChannel": "DISCORD_VALID_CHANNEL_ID_GOES_HERE", // Log guild joins/leaves
-        "adminGuildID": "DISCORD_VALID_GUILD_ID_GOES_HERE", // Main Admin guild for sudo commands
-        "auditc": {
-            "channel": ["DISCORD_VALID_CHANNEL_ID_GOES_HERE", "CAN TAKE MULTIPLE"], //Channels where audit commands work
-            "taglogchannel": "DISCORD_VALID_CHANNEL_ID_GOES_HERE" // Channel where tag logs are sent
-        },
-        "autoAuction": {
-            "auctionCount": 100,
-            "auctionMultiplier": 0.9,
-            "auctionLength": 12,
-            "auctionUserID": "DISCORD_VALID_USER_ID_GOES_HERE WILL EMPTY CARDS"
-        },
-        "evalc": {
-            "cardPrices": [ 30, 80, 150, 400, 1000, 2500 ],
-            "evalUserRate": 0.25,
-            "evalVialRate": 0.055,
-            "aucEval": {
-                "minSamples": 4,
-                "maxSamples": 16,
-                "minBounds": 0.5,
-                "maxBounds": 5.0,
-                "aucFailMultiplier": 0.90,
-                "evalUpdateChannel": "DISCORD_VALID_CHANNEL_ID_GOES_HERE"
-            }
-        },
-        "dbl": {
-            "token": "",
-            "port": 2727,
-            "pass": "",
-            "topggUrl": "",
-            "dblUrl": ""
-        },
+    {
+    "grouptimeout": 1000, //This sets how long before ayano sends a message after receiving one to send
+    "database": "", //This was originally bot in amusement, place it here for ayano.
+    "amusement": {
         "analytics": {
             "mixpanel": ""
         },
-        "metac": {
-            "sauceNaoToken": "",
-            "danbooruToken": ""
+        "auction": {
+            "auctionFeePercent": 10, //Set the auction fee in percentage
+            "auto": {
+                "count": 100, // How many auctions will auto-auction keep listed
+                "multiplier": 0.9, // How far above or below eval will the auctions list at
+                "length": 12, // How long will they last (in hours)
+                "userID": "DISCORD_VALID_USER_ID_GOES_HERE WILL EMPTY CARDS" // The user to remove cards from
+            },
+            "lock": false // Is auctioning cards locked?
+        },
+        "bot": {
+            "token": "DISCORD_VALID_BOT_TOKEN_GOES_HERE", // Bot token for amusement
+            "shards": 1, // How many shards amusement will use
+            "prefix": "/", // With slash commands this is useless basically
+            "invite": "", // The invite link for your bot
+            "maintenance": true, // Is bot under maintenance? Sets to false when bot is ready to receive commands
+            "debug": true,
+            "adminGuildID": "DISCORD_VALID_GUILD_ID_GOES_HERE" // The sudo commands will be guild commands here
+        },
+        "channels": {
+            "tagLog": "DISCORD_VALID_CHANNEL_ID_GOES_HERE", // Where tag auditing reports go to
+            "guildLog": "DISCORD_VALID_CHANNEL_ID_GOES_HERE", // Where amusement join/leaves are logged
+            "evalUpdate" :"DISCORD_VALID_CHANNEL_ID_GOES_HERE" // Where eval updates are posted
+        },
+        "effects": {
+            "uniqueFrequency": 10 // How many uses of memories effects before a missing card is guaranteed
+        },
+        "evals": {
+            "auction": {
+                "minSamples": 4, //The minimum auctions needed before an eval update
+                "maxSamples": 16, //The maximum values that can be held at a time
+                "minBounds": 0.5, // Min deviation
+                "maxBounds": 5.0, // Max deviation
+                "aucFailMultiplier": 0.90 // Multiplier on cards for auctions not selling
+            },
+            "cardPrices": [ 30, 80, 150, 400, 1000, 2500 ],
+            "evalUserRate": 0.25,
+            "evalVialRate": 0.055
+        },
+        "links": {
+            "baseurl": "https://amusementclub.nyc3.digitaloceanspaces.com", // Long card URL
+            "shorturl": "https://amuse.noxc.dev", // Short card URL
+            "topggUrl": "", // Voting link for top.gg
+            "dblUrl": "" // Voting link for discorbotlist
+        },
+        "rng": {
+            "legendary": 0.01 // Like col rarity, what does Math.random() need to roll below for a chance of a legendary
+        },
+        "sourcing": {
+            "sauceNaoToken": ""
+        },
+        "symbols": { // This has been removed from index.js to allow more easy access
+            "tomato": "`🍅`",
+            "vial": "`🍷`",
+            "lemon": "`🍋`",
+            "star": "★",
+            "auc_sbd": "🔹",
+            "auc_lbd": "🔷",
+            "auc_sod": "🔸",
+            "auc_wss": "▫️",
+            "accept": "✅",
+            "decline": "❌",
+            "red_circle": "`🔴`",
+            "amu_plus": "➕"
         }
     },
     "ayanobot": {
-        "token": "", // Ayano's bot token goes here
-        "prefix": "ayy", // Prefix for Ayano, which still uses message commands and not slash commands
-        "reportchannel": "", // Channel for error and startup messages to go to
-        "admins": [], // Deprecated, use Amusement Roles in place of this
-        "mods": [] // Deprecated, use Amusement Roles in place of this
+        "token": "DISCORD_VALID_BOT_TOKEN_GOES_HERE", // Ayano's bot token goes here
+        "prefix": "ayy", // Ayano still uses message content so this is needed
+        "reportchannel": "" // Where ayano will post it's messages
     },
     "aws": {
         "endpoint": "nyc3.digitaloceanspaces.com",
@@ -90,7 +114,19 @@ The following is taken from `./config.dest.json` but comments are added for clar
         "s3accessKeyId": "",
         "s3secretAccessKey": "",
         "cardroot": "cards/"
+    },
+    "webhooks": {
+        "dbl": {
+            "token": "",
+            "port": 2727,
+            "pass": ""
+        },
+        "kofi": {
+            "verification": "KO-FI VERIFICATION TOKEN GOES HERE"
+        }
     }
+}
+
 ```
 </details>
 
@@ -128,6 +164,12 @@ All commands besides the first can be run in a server with Ayano and correct per
 
 `rename` - Rename a card in Amusement Club
 - To rename a card `ayy rename card query, New Name`
+
+`alias` - Add an alias to a collection
+- To add an alias `ayy alias ColID, alias`
+
+`coldisplay` - Change the display name of a collection
+- To change the display `ayy coldisplay colID, New Display Name`
 
 `banword` - Adds a word to the banned word list, keeping it from being used in tags
 - To ban a word (e.g. lame) `ayy banword lame`
