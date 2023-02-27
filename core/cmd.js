@@ -29,7 +29,7 @@ const buildTree = (args, perm) => {
     })
 }
 
-const trigger = (ctx, args, roles) => {
+const trigger = (ctx, args, roles, extra) => {
     let cursor = tree
 
     if(args.length === 0)
@@ -38,6 +38,8 @@ const trigger = (ctx, args, roles) => {
     while (cursor.hasOwnProperty(args[0])) {
         cursor = cursor[args[0]]
         args.shift()
+        if (extra)
+            extra.shift()
     }
 
     if (!cursor.hasOwnProperty('_callback')) {
@@ -48,8 +50,9 @@ const trigger = (ctx, args, roles) => {
         if(!roles || !cursor._perm.find(x => roles.includes(x)))
             return ctx.error(`Only users with ayano roles **[${cursor._perm}]** can execute this command`)
     }
+    const newArgs = [ctx, args || {}].concat(extra)
 
-    return cursor._callback.apply({}, [ctx].concat(args))
+    return cursor._callback.apply({}, newArgs)
 }
 
 module.exports = { cmd, pcmd, trigger }

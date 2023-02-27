@@ -2,7 +2,6 @@ const { trigger } = require('./cmd')
 const events = require('./events')
 
 const path = require('path')
-const commandLineArgs = require('command-line-args')
 require('../modules')
 
 const ctx = {
@@ -17,15 +16,10 @@ const ctx = {
 
     allowExit: true,
 
-    input: async (argv, roles) => {
+    input: async (argv, roles, extra) => {
         try {
-            /*const mainOptions = commandLineArgs(
-                [{ name: 'command', defaultOption: true }], { argv, stopAtFirstUnknown: true })
-
-            mainOptions.command = mainOptions.command || 'default'*/
-
             argv = argv.filter(n => n)
-            await trigger(ctx, argv, roles)
+            await trigger(ctx, argv, roles, extra)
 
             if(ctx.allowExit) process.exit(0)
         } catch(e) {
