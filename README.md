@@ -29,7 +29,7 @@ The ayano config is a mix of the development config included with Amusement Club
 
 The following is taken from `./config.dest.json` but comments are added for clarity
 
-```json
+```js
     {
     "grouptimeout": 1000, //This sets how long before ayano sends a message after receiving one to send
     "database": "", //This was originally bot in amusement, place it here for ayano.
@@ -145,7 +145,11 @@ All commands besides the first can be run in a server with Ayano and correct per
 
 `stop` - This shuts down Amusement Club
 
-`reconnect` - This restarts the Amusement Club instance
+`restart` - This restarts the Amusement Club instance
+
+`ayrestart` - This restarts the Ayano instance
+
+`git pull` - This pulls the latest update of the current amusement branch
 
 `listen` - Start the webhook listeners for votes/kofi
 
