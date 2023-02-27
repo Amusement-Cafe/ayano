@@ -16,7 +16,7 @@ const write             = require('./write')
 
 require('datejs')
 
-const addPromo = async (ctx, ...args) => {
+const addPromo = async (ctx, args) => {
     const options = commandLineArgs([
         { name: 'src', defaultOption: true },
         { name: 'start', alias: 's', type: x => Date.parse(x) },
@@ -55,7 +55,7 @@ const addPromo = async (ctx, ...args) => {
     return ctx.info(`Created new promo:\n${Object.entries(promo).map(([key, value]) => `${key}: ${value}`).join('\n')}`)
 }
 
-const addBoost = async (ctx, ...args) => {
+const addBoost = async (ctx, args) => {
     const options = commandLineArgs([
         { name: 'id', type: String, defaultOption: true },
         { name: 'name', type: String },

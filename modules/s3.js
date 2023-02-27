@@ -12,11 +12,11 @@ const {
 
 const acceptedExts = ['png', 'gif', 'jpg']
 
-const update = async (ctx, ...args) => {
+const update = async (ctx, args) => {
     const conf = ctx.config.aws
     ctx.warn(`Initializing card update...`)
 
-    const options = getoptions(ctx, ...args)
+    const options = getoptions(ctx, args)
     const params = { Bucket: conf.bucket, MaxKeys: 2000 }
     let data = {}, passes = 1, newcol = false, newcard = false
 
@@ -98,7 +98,7 @@ const rename = async (ctx, oldKey, newKey) => {
     return 0
 }
 
-const getoptions = (ctx, ...argv) => {
+const getoptions = (ctx, argv) => {
     if(!argv) return {}
 
     const options = commandLineArgs([
