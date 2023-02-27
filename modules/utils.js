@@ -8,7 +8,7 @@ const {
     withData 
 } = require('../core/with')
 
-const rename = async (ctx, ...args) => {
+const rename = async (ctx, args) => {
     if(!args){
         return ctx.error(`At least 2 arguments required`)
     }
@@ -54,7 +54,7 @@ const rename = async (ctx, ...args) => {
         ctx.info(`Failed to rename card file, see the errors above`)
 }
 
-const banword = async (ctx, ...args) => {
+const banword = async (ctx, args) => {
     const word = args.join('_')
 
     if(ctx.data.bannedwords.some(x => x === word))
@@ -66,7 +66,7 @@ const banword = async (ctx, ...args) => {
     ctx.info(`Added \`${word}\` to the list of banned words`)
 }
 
-const unbanword = async (ctx, ...args) => {
+const unbanword = async (ctx, args) => {
     const word = args.join('_')
 
     if(!ctx.data.bannedwords.some(x => x === word))
@@ -79,6 +79,61 @@ const unbanword = async (ctx, ...args) => {
     ctx.info(`Removed \`${word}\` from the list of banned words`)
 }
 
+const alias = async (ctx, args) => {
+    if(!args){
+        return ctx.error(`At least 2 arguments required`)
+    }
+
+    const parts = args.join(' ').split(',')
+
+    if(parts.length < 2){
+        return ctx.error(`Please specify collection followed by the new alias divided with ','`)
+    }
+
+    const colQ = parts[0].trim()
+    const alias = parts[1].trim().replace(/\s/g, '_')
+
+    const col = ctx.data.collections.filter(x => colQ === x.id)?.pop()
+
+    if (!col || col.length === 0)
+        return ctx.error('No collection found to alias!')
+
+    col.aliases.push(alias)
+    await write.collections(ctx)
+
+    ctx.info(`Added \`${alias}\` as an alias to \`${colQ}\``)
+}
+
+const coldisplay = async (ctx, args, ...extra) => {
+    console.log(args)
+    console.log(extra)
+    if(!args){
+        return ctx.error(`At least 2 arguments required`)
+    }
+
+    const parts = args.join(' ').split(',')
+    const capParts = extra.join(' ').split(',')
+
+    if(parts.length < 2){
+        return ctx.error(`Please specify collection followed by the new alias divided with ','`)
+    }
+
+    const colQ = parts[0].trim()
+    const display = capParts[1].trim()
+
+    const col = ctx.data.collections.filter(x => colQ === x.id)?.pop()
+
+    if (!col || col.length === 0)
+        return ctx.error('No collection found to change display name of!')
+
+    col.name = display
+    await write.collections(ctx)
+
+    ctx.info(`Set **${display}** as the new display name for \`${colQ}\``)
+}
+
 pcmd(['admin', 'cardmod'], ['rename'], withData(rename))
 pcmd(['admin', 'mod'], ['banword'], withData(banword))
 pcmd(['admin', 'mod'], ['unbanword'], withData(unbanword))
+pcmd(['admin', 'mod'], ['coldisplay'], withData(coldisplay))
+pcmd(['admin', 'mod'], ['alias'], withData(alias))
