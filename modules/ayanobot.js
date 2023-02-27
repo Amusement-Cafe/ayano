@@ -15,7 +15,7 @@ const colors = {
     blue: 1420012,
 }
 
-let bot, connected
+let bot, connected, evs
 
 const create = withConfig((ctx) => {
 
@@ -30,30 +30,40 @@ const create = withConfig((ctx) => {
         if (msg.connected) connected = true
         if (msg.error) ctx.error(msg.error)
         if (msg.info) ctx.info(msg.info)
-        if (msg.input) ctx.input(msg.args, msg.roles)
+        if (msg.input) ctx.input(msg.args, msg.roles, msg.extra)
     })
 
-    events.on('info', (msg, title) => {
-        if (connected)
-            bot.send({send: true, content: msg, color: colors.green, title: title})
-    })
-    events.on('warn', (msg, title) => {
-        if (connected)
-            bot.send({send: true, content: msg, color: colors.yellow, title: title})
-    })
-    events.on('error', (err) => {
-        if (connected)
-            try {
-                if(err.message && err.stack)
-                    bot.send({send: true, content: err.stack, color: colors.red, title: err.message})
-                else
-                    bot.send({send: true, content: err, color: colors.red})
-            } catch (e) {
-                console.log(e)
-            }
+    bot.on('error', async (err) => {
+        if (err.code === 'ERR_IPC_CHANNEL_CLOSED')
+            return
+        console.log('ayano error')
+        await ctx.error(err)
     })
 
-    events.on('quit', () => disconnect(ctx))
+    if (!evs) {
+        events.on('info', (msg, title) => {
+            if (connected)
+                bot.send({send: true, content: msg, color: colors.green, title: title})
+        })
+        events.on('warn', (msg, title) => {
+            if (connected)
+                bot.send({send: true, content: msg, color: colors.yellow, title: title})
+        })
+        events.on('error', (err) => {
+            if (connected)
+                try {
+                    if(err.message && err.stack)
+                        bot.send({send: true, content: err.stack, color: colors.red, title: err.message})
+                    else
+                        bot.send({send: true, content: err, color: colors.red})
+                } catch (e) {
+                    console.log(e)
+                }
+        })
+
+        events.on('quit', () => disconnect(ctx))
+        evs = true
+    }
 
 })
 
@@ -76,5 +86,15 @@ const disconnect = async (ctx) => {
     bot = null
 }
 
+const restart = async (ctx) => {
+    if(!connected)
+        return await ctx.error(`**Ayano** is not running`)
+
+    await disconnect(ctx)
+    await startbot(ctx)
+    await ctx.info(`Restarted Ayano`)
+}
+
 pcmd(['admin'],['watch'], withCLI(withConfig(withDB(startbot))))
 pcmd(['admin'],['stopwatch'], disconnect)
+pcmd(['admin'], ['ayrestart'], restart)
