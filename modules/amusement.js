@@ -20,8 +20,8 @@ const delay = time => new Promise(res=>setTimeout(res,time))
 const create = (ctx) => {
 
     ctx.allowExit = false
-    options  = Object.assign({shards: ctx.config.shards, data: ctx.data}, ctx.config.shard)
-    instance = child.fork('../amusementclub2.0', {env: options})
+    options  = Object.assign({data: ctx.data}, ctx.config.amusement)
+    instance = child.fork('../amusementclub2.0', {env: ctx.config.amusement.bot})
     instance.send({startup: options})
 
     instance.on('message', (msg) => {
@@ -29,7 +29,7 @@ const create = (ctx) => {
         if (msg.error) ctx.error(msg.error)
     })
     instance.on('info', (msg, title) => ctx.info(`[Amusement] ${msg}`, title))
-    instance.on('error', ctx.error)
+    instance.on('error', err => ctx.error(err))
 
     if (!evs) {
         events.on('quit', () => disconnect(ctx))
@@ -63,7 +63,7 @@ const disconnect = async (ctx) => {
     instance = null
 }
 
-const reconnect = async (ctx) => {
+const restart = async (ctx) => {
     if(!connected)
         return await ctx.error(`**Amusement bot** is not running`)
 
@@ -71,6 +71,16 @@ const reconnect = async (ctx) => {
     await delay(1500)
     await startBot(ctx)
     await ctx.info(`Restarted Amusement bot connection to Discord`)
+}
+
+const gitPull = async (ctx) => {
+    child.exec('git pull', {cwd: '../amusementclub2.0'},
+        (err, stdout, stderr) => {
+        if (err)
+            return ctx.error(err)
+        ctx.info(stdout)
+        ctx.error(stderr)
+    })
 }
 
 const voteQueue = () => {
@@ -91,7 +101,8 @@ setInterval(voteQueue, 1000)
 
 pcmd(['admin'],['start'], withCLI(withConfig(withData(startBot))))
 pcmd(['admin'],['stop'], disconnect)
-pcmd(['admin'],['reconnect'], reconnect)
+pcmd(['admin'],['restart'], restart)
+pcmd(['admin'], ['git', 'pull'], gitPull)
 
 module.exports = {
     addVoteQueue
