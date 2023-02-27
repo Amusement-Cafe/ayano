@@ -13,6 +13,7 @@ const collections = (ctx) => {
         'compressed',
         'dateAdded',
         'author',
+        'rarity',
     ]))
 
     ctx.events.emit('colupdate', ctx.data.collections)
