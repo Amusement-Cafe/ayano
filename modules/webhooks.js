@@ -18,7 +18,7 @@ let listener
 
 const listen = (ctx) => {
     const app = express()
-    const topggWebhook = new Topgg.Webhook(ctx.config.shard.dbl.pass)
+    const topggWebhook = new Topgg.Webhook(ctx.config.webhooks.dbl.pass)
     app.use(bodyParser.json())
     app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -30,7 +30,7 @@ const listen = (ctx) => {
 
     // Webhook handle for https://discordbotlist.com/
     app.post("/dbl", (req, res) => {
-        if(req.headers.authorization != ctx.config.shard.dbl.pass) {
+        if(req.headers.authorization != ctx.config.webhooks.dbl.pass) {
             console.log(`DBL webhook has incorrect auth token ${req.headers.authorization}`)
             res.status(401).end()
             return
@@ -43,7 +43,7 @@ const listen = (ctx) => {
     app.post("/kofi", (req, res) => {
         const obj = JSON.parse(req.body.data)
 
-        if (obj.verification_token != ctx.config.kofi){
+        if (obj.verification_token != ctx.config.webhooks.kofi.verification){
             console.log(`Kofi webhook has an incorrect verification token! ${obj.verification_token}`)
             res.status(401).end()
             return
@@ -52,7 +52,7 @@ const listen = (ctx) => {
         res.status(200).end()
     })
 
-    listener = app.listen(ctx.config.shard.dbl.port, () => console.log(`Listening to webhooks on port ${ctx.config.shard.dbl.port}`))
+    listener = app.listen(ctx.config.webhooks.dbl.port, () => console.log(`Listening to webhooks on port ${ctx.config.webhooks.dbl.port}`))
 }
 
 pcmd(['admin'], ['listen'], withConfig(listen))
