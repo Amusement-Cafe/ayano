@@ -12,11 +12,11 @@ const withConfig = callback => (ctx, ...args) => {
     ctx.info(`Getting config on path '${ctx.configPath}'`)
     const cfg = requireOrDefault(`${ctx.configPath}`)
 
-    if(!cfg || !cfg.shard)
+    if(!cfg || !cfg.amusement)
         return ctx.error(`Config not found`)
 
     ctx.config = cfg
-    ctx.config.shard.database = cfg.database
+    ctx.config.amusement.bot.database = cfg.database
 
     return callback(ctx, ...args)
 }
