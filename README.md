@@ -147,6 +147,8 @@ All commands besides the first can be run in a server with Ayano and correct per
 
 `restart` - This restarts the Amusement Club instance
 
+`autorestart` - This starts the autorestart process for Amusement Club, restarting once weekly
+
 `ayrestart` - This restarts the Ayano instance
 
 `git pull` - This pulls the latest update of the current amusement branch
@@ -171,6 +173,9 @@ All commands besides the first can be run in a server with Ayano and correct per
 
 `alias` - Add an alias to a collection
 - To add an alias `ayy alias ColID, alias`
+
+`unalias` - Remove an alias from a collection
+- To remove an alias `ayy unalias ColID, alias`
 
 `coldisplay` - Change the display name of a collection
 - To change the display `ayy coldisplay colID, New Display Name`
