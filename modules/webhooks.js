@@ -52,7 +52,7 @@ const listen = (ctx) => {
         res.status(200).end()
     })
 
-    listener = app.listen(ctx.config.webhooks.dbl.port, () => console.log(`Listening to webhooks on port ${ctx.config.webhooks.dbl.port}`))
+    listener = app.listen(ctx.config.webhooks.dbl.port, () => ctx.info(`Listening to webhooks on port ${ctx.config.webhooks.dbl.port}`))
 }
 
 pcmd(['admin'], ['listen'], withConfig(listen))
