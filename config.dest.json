@@ -48,7 +48,8 @@
             "baseurl": "https://amusementclub.nyc3.digitaloceanspaces.com",
             "shorturl": "https://amuse.noxc.dev",
             "topggUrl": "",
-            "dblUrl": ""
+            "dblUrl": "",
+            "kofi": ""
         },
         "rng": {
             "legendary": 0.01
