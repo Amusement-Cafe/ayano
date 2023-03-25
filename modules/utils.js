@@ -104,6 +104,37 @@ const alias = async (ctx, args) => {
     ctx.info(`Added \`${alias}\` as an alias to \`${colQ}\``)
 }
 
+const unalias = async (ctx, args) => {
+    if(!args){
+        return ctx.error(`At least 2 arguments required`)
+    }
+
+    const parts = args.join(' ').split(',')
+
+    if(parts.length < 2){
+        return ctx.error(`Please specify collection followed by the alias to remove divided with ','`)
+    }
+
+    const colQ = parts[0].trim()
+    const alias = parts[1].trim().replace(/\s/g, '_')
+
+    const col = ctx.data.collections.filter(x => colQ === x.id)?.pop()
+
+    if (!col || col.length === 0)
+        return ctx.error('No collection found to unalias!')
+
+    if (col.aliases.length === 1)
+        return ctx.error(`There is only 1 alias for ${colQ} and it cannot be removed!`)
+
+    if (!col.aliases.includes(alias))
+        return ctx.error(`The collection \`${colQ}\` does not contain the alias \`${alias}\``)
+
+    col.aliases = col.aliases.filter(x => x != alias)
+    await write.collections(ctx)
+
+    ctx.info(`Removed \`${alias}\` as an alias for \`${colQ}\``)
+}
+
 const coldisplay = async (ctx, args, ...extra) => {
     console.log(args)
     console.log(extra)
@@ -137,3 +168,5 @@ pcmd(['admin', 'mod'], ['banword'], withData(banword))
 pcmd(['admin', 'mod'], ['unbanword'], withData(unbanword))
 pcmd(['admin', 'mod'], ['coldisplay'], withData(coldisplay))
 pcmd(['admin', 'mod'], ['alias'], withData(alias))
+pcmd(['admin', 'mod'], ['unalias'], withData(unalias))
+
