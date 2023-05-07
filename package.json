@@ -12,7 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "amusementclub2.0": "file:../amusementclub2.0",
-    "aws-sdk": "^2.844.0",
+    "aws-sdk": "^2.1373.0",
     "command-line-args": "^5.1.1",
     "datejs": "^1.0.0-rc3",
     "eris": "^0.17.1",
