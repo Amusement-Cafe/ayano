@@ -49,7 +49,7 @@ const rename = async (ctx, args) => {
     const code = await s3.rename(ctx, oldKey, newKey)
 
     if(code)
-        ctx.info(`Card file has been renamed. New URL: ${ctx.config.shard.baseurl}/${newKey}`)
+        ctx.info(`Card file has been renamed. New URL: ${ctx.config.amusement.links.baseurl}/${newKey}`)
     else
         ctx.info(`Failed to rename card file, see the errors above`)
 }
