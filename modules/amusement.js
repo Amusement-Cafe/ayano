@@ -13,7 +13,7 @@ const {
     withCLI 
 }  = require('../core/with')
 
-let queue = [], instance, connected, options, evs, ars
+let queue = [], instance, connected, options, evs, ars, voteContinue
 
 const delay = time => new Promise(res=>setTimeout(res,time))
 
@@ -50,6 +50,7 @@ const startBot = async (ctx) => {
     await ctx.info(`**Amusement bot** is starting`)
     if(!instance) create(ctx)
     connected = true
+    voteContinue = true
 }
 
 const autoRestart = async (ctx) => {
@@ -60,6 +61,7 @@ const autoRestart = async (ctx) => {
 
     await ctx.warn(`**Amusement bot** was disconnected`)
     connected = false
+    voteContinue = false
     instance = null
     await delay(1000)
     await startBot(ctx)
@@ -81,6 +83,7 @@ const disconnect = async (ctx) => {
     await delay(1000)
     await ctx.warn(`**Amusement bot** was disconnected`)
     connected = false
+    voteContinue = false
     instance = null
 }
 
@@ -105,15 +108,16 @@ const gitPull = async (ctx) => {
 }
 
 const voteQueue = (ctx) => {
-    if (queue.length === 0 || !connected)
+    if (queue.length === 0 || !voteContinue)
         return
     try {
         const qItem = queue[0]
         instance.send(qItem)
         queue.shift()
     } catch (e) {
-        connected = false
+        voteContinue = false
         ctx.error('Error Sending Vote: Restart Amusement')
+        ctx.error(e)
     }
 }
 
