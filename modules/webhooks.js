@@ -37,7 +37,7 @@ const listen = (ctx) => {
             res.status(401).end()
             return
         }
-        addVoteQueue(ctx, req, 'dbl')
+        addVoteQueue(ctx, req.body.id, 'dbl')
         res.status(200).end()
     })
 
