@@ -17,6 +17,8 @@ const {
 let listener
 
 const listen = (ctx) => {
+    if (listener)
+        return ctx.error(`Ayano is already listening for webhooks on port ${ctx.config.webhooks.dbl.port}`)
     const app = express()
     const topggWebhook = new Topgg.Webhook(ctx.config.webhooks.dbl.pass)
     app.use(bodyParser.json())

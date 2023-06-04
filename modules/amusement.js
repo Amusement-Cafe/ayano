@@ -38,6 +38,7 @@ const create = (ctx) => {
         events.on('boostupdate', (data) => instance.send({updateBoosts: data}))
         events.on('wordsupdate', (data) => instance.send({updateWords: data}))
         evs = true
+        setInterval(() => voteQueue(ctx), 1000)
     }
 
 }
@@ -103,21 +104,23 @@ const gitPull = async (ctx) => {
     })
 }
 
-const voteQueue = () => {
+const voteQueue = (ctx) => {
     if (queue.length === 0 || !connected)
         return
     try {
         const qItem = queue[0]
         instance.send(qItem)
         queue.shift()
-    } catch (e) { }
+    } catch (e) {
+        connected = false
+        ctx.error('Error Sending Vote: Restart Amusement')
+    }
 }
 
 const addVoteQueue = (ctx, vote, type) => {
     queue.push({vote: vote, type: type})
 }
 
-setInterval(voteQueue, 1000)
 
 pcmd(['admin'],['start'], withCLI(withConfig(withData(startBot))))
 pcmd(['admin'],['stop'], disconnect)
