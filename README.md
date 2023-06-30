@@ -1,7 +1,3 @@
-# This branch is under development and is not meant to be used until this notice is removed
-
----
-
 **Ayano** is a bot designed to manage [Amusement Club](https://github.com/Amusement-Cafe/amusementclub2.0) and is required for card management, voting webhooks, and remote management of the Amusement Club process.
 
 ## Setup
@@ -179,6 +175,15 @@ All commands besides the first can be run in a server with Ayano and correct per
 
 `coldisplay` - Change the display name of a collection
 - To change the display `ayy coldisplay colID, New Display Name`
+
+`colauthor` - Set or change the collection's author
+- To change the author `ayy colauthor colID, userID`
+
+`colrarity` - Set or change the collection's rarity
+- To change the rarity `ayy colrarity colID, %number` (e.g. `ayy colrarity special, 0.2` = 0.2% rarity or 0.002)
+
+`colcompressed` - Toggle between compressed or non-compressed
+- To toggle the compression setting `ayy colcompressed colID`
 
 `banword` - Adds a word to the banned word list, keeping it from being used in tags
 - To ban a word (e.g. lame) `ayy banword lame`
