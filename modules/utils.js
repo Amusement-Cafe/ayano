@@ -46,12 +46,18 @@ const rename = async (ctx, args) => {
 
     const oldKey = `cards/${card.col}/${card.level}_${oldName}.${ext}`
     const newKey = `cards/${card.col}/${card.level}_${name}.${ext}`
-    const code = await s3.rename(ctx, oldKey, newKey)
+    try {
+        const code = await s3.rename(ctx, oldKey, newKey)
 
-    if(code)
-        ctx.info(`Card file has been renamed. New URL: ${ctx.config.amusement.links.baseurl}/${newKey}`)
-    else
+        if(code)
+            ctx.info(`Card file has been renamed. New URL: ${ctx.config.amusement.links.baseurl}/${newKey}`)
+        else
+            ctx.info(`Failed to rename card file, see the errors above`)
+    } catch (e) {
         ctx.info(`Failed to rename card file, see the errors above`)
+        ctx.error(e)
+    }
+
 }
 
 const banword = async (ctx, args) => {
@@ -163,10 +169,83 @@ const coldisplay = async (ctx, args, ...extra) => {
     ctx.info(`Set **${display}** as the new display name for \`${colQ}\``)
 }
 
+const colrarity = async (ctx, args) => {
+    if (!args) {
+        return ctx.error(`At least 2 arguments required`)
+    }
+
+    const parts = args.join(' ').split(',')
+
+    if (parts.length < 2) {
+        return ctx.error(`Please specify collection followed by the rarity percentage to set divided with ','`)
+    }
+
+    const colQ = parts[0].trim()
+    const rarity = parts[1].trim()
+
+    const col = ctx.data.collections.filter(x => colQ === x.id)?.pop()
+
+    if (!col || col.length === 0)
+        return ctx.error('No collection found to change rarity of!')
+
+    if (isNaN(rarity))
+        return ctx.error(`A valid number is required to set rarity!`)
+
+    col.rarity = rarity / 100
+    await write.collections(ctx)
+
+    ctx.info(`Set rarity of \`${colQ}\` to **${rarity}%**`)
+}
+
+const colauthor = async (ctx, args) => {
+    if(!args) {
+        return ctx.error(`At least 2 arguments required`)
+    }
+
+    const parts = args.join(' ').split(',')
+
+    if (parts.length < 2) {
+        return ctx.error(`Please specify collection followed by the user ID to set as the author divided with ','`)
+    }
+
+    const colQ = parts[0].trim()
+    const col = ctx.data.collections.filter(x => colQ === x.id)?.pop()
+
+    if (!col || col.length === 0)
+        return ctx.error('No collection found to change author of!')
+
+    col.author = parts[1].trim()
+    await write.collections(ctx)
+
+    ctx.info(`Set author of \`${colQ}\` to <@${parts[1].trim()}>`)
+
+}
+
+const colcompressed = async (ctx, args) => {
+    if (!args) {
+        return ctx.error(`An argument is required`)
+    }
+
+    const colQ = args.join(' ').trim()
+    const col = ctx.data.collections.filter(x => colQ === x.id)?.pop()
+
+    if (!col || col.length === 0)
+        return ctx.error('No collection found to change compression status of!')
+
+    col.compressed = !col.compressed
+    await write.collections(ctx)
+
+    ctx.info(`Set compression of \`${colQ}\` to **${col.compressed}**`)
+
+}
+
 pcmd(['admin', 'cardmod'], ['rename'], withData(rename))
 pcmd(['admin', 'mod'], ['banword'], withData(banword))
 pcmd(['admin', 'mod'], ['unbanword'], withData(unbanword))
 pcmd(['admin', 'mod'], ['coldisplay'], withData(coldisplay))
+pcmd(['admin', 'mod'], ['colrarity'], withData(colrarity))
+pcmd(['admin', 'mod'], ['colauthor'], withData(colauthor))
+pcmd(['admin', 'mod'], ['colcompressed'], withData(colcompressed))
 pcmd(['admin', 'mod'], ['alias'], withData(alias))
 pcmd(['admin', 'mod'], ['unalias'], withData(unalias))
 
