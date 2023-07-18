@@ -19,7 +19,7 @@
     "inquirer": "^7.3.3",
     "lodash": "^4.17.21",
     "mongodb": "^3.6.4",
-    "mongoose": "^6.5.1",
+    "mongoose": "^6.11.3",
     "require-reload": "^0.2.2"
   },
   "bin": {
