@@ -41,7 +41,7 @@ const send = async (content, col, title) => {
                 msgstack.title = msgstack.title.substring(0, 255)
             if (!msgstack.description)
                 return
-            msgstack.description = msgstack.description.substring(0, 2047)
+            msgstack.description = msgstack.description?.substring(0, 2047)
             const embed = { embeds: [msgstack] }
             msgstack = null
             try {

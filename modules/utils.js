@@ -41,11 +41,12 @@ const rename = async (ctx, args) => {
     ctx.info(`Updated card with new name ${cardMod.formatName(card)} (old name '${oldName}')`)
 
     const col = ctx.data.collections.find(x => x.id === card.col)
+    const promo = col.promo? 'promo' : 'cards'
     let ext = col.compressed? 'jpg' : 'png'
     ext = card.animated? 'gif' : ext
 
-    const oldKey = `cards/${card.col}/${card.level}_${oldName}.${ext}`
-    const newKey = `cards/${card.col}/${card.level}_${name}.${ext}`
+    const oldKey = `${promo}/${card.col}/${card.level}_${oldName}.${ext}`
+    const newKey = `${promo}/${card.col}/${card.level}_${name}.${ext}`
     try {
         const code = await s3.rename(ctx, oldKey, newKey)
 
