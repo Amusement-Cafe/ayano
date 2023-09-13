@@ -112,7 +112,13 @@ const voteQueue = (ctx) => {
         return
     try {
         const qItem = queue[0]
-        instance.send(qItem)
+        instance.send(qItem, (err) => {
+            if (!err)
+                return
+            voteContinue = false
+            ctx.error('Error Sending Vote: Restart Amusement')
+            ctx.error(err)
+        })
         queue.shift()
     } catch (e) {
         voteContinue = false
