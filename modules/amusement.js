@@ -26,6 +26,8 @@ const create = (ctx) => {
     instance.on('message', (msg) => {
         if (msg.info) ctx.info(`[Amusement] ${msg.info}`)
         if (msg.error) ctx.error(msg.error)
+        if (msg.unhandled) console.log(msg.unhandled)
+        if (msg.uncaught) console.log(msg.uncaught)
     })
     instance.on('info', (msg, title) => ctx.info(`[Amusement] ${msg}`, title))
     instance.on('error', err => ctx.error(err))
