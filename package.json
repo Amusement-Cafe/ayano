@@ -21,7 +21,7 @@
     "lodash": "^4.17.21",
     "mongodb": "^3.7.2",
     "mongoose": "^6.5.1",
-    "oceanic.js": "^1.8.1-dev.55d2302",
+    "oceanic.js": "^1.8.1",
     "require-reload": "^0.2.2"
   },
   "bin": {
