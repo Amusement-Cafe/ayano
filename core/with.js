@@ -86,9 +86,11 @@ const withS3 = callback => async (ctx, ...args) => {
     const conf = ctx.config.aws
     const endpoint = new AWS.Endpoint(conf.endpoint)
     ctx.s3 = new AWS.S3({
-        endpoint, 
-        accessKeyId: conf.s3accessKeyId, 
-        secretAccessKey: conf.s3secretAccessKey
+        endpoint,
+        accessKeyId: conf.s3accessKeyId,
+        secretAccessKey: conf.s3secretAccessKey,
+        signatureVersion: conf.signatureVersion,
+        s3ForcePathStyle: conf.s3ForcePathStyle
     })
     ctx.info(`Successfully connected to spaces`)
 

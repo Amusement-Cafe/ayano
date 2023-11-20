@@ -83,7 +83,9 @@
         "bucket": "amusementclub",
         "s3accessKeyId": "",
         "s3secretAccessKey": "",
-        "cardroot": "cards/"
+        "cardroot": "cards/",
+        "s3ForcePathStyle": true,
+        "signatureVersion": "v4"
     },
     "webhooks": {
         "dbl": {
