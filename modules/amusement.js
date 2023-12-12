@@ -20,7 +20,7 @@ const delay = time => new Promise(res=>setTimeout(res,time))
 const create = (ctx) => {
     ctx.allowExit = false
     options  = Object.assign({data: ctx.data}, ctx.config.amusement)
-    instance = child.fork('../amusementclub2.0', {env: ctx.config.amusement.bot})
+    instance = child.fork(ctx.config.amusementFolder, {env: ctx.config.amusement.bot})
     instance.send({startup: options})
 
     instance.on('message', (msg) => {

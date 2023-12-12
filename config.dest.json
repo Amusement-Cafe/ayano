@@ -1,6 +1,8 @@
 {
     "grouptimeout": 1000,
     "database": "",
+    "dbname": "amusement2",
+    "amusementFolder": "../amusementclub2.0",
     "amusement": {
         "analytics": {
             "mixpanel": ""

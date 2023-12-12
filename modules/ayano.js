@@ -11,6 +11,7 @@ const colors = {
 
 // const bot = new Eris(process.env.token)
 const bot = new Oceanic.Client({ auth: 'Bot ' + process.env.token, gateway: { intents: ["MESSAGE_CONTENT", "GUILD_MESSAGES", "DIRECT_MESSAGES"]}})
+const shard = new Oceanic.ShardManager(bot, {intents: ["MESSAGE_CONTENT", "GUILD_MESSAGES", "DIRECT_MESSAGES"]})
 let replych = process.env.reportchannel, msgstack, tm, tmpnotice, db
 const prefix = process.env.prefix
 
@@ -28,7 +29,7 @@ process.on('message', async (msg) => {
     if (msg.send) await send(msg.content, msg.color, msg.title)
     if (msg.quit) await shutdown()
     if (msg.connect) await startup()
-    if (msg.db) db = (await MongoClient.connect(process.env.mongoUri, {useNewUrlParser: true, useUnifiedTopology: true})).db('amusement2')
+    if (msg.db) db = (await MongoClient.connect(process.env.mongoUri, {useNewUrlParser: true, useUnifiedTopology: true})).db(process.env.dbname)
 })
 
 const send = async (content, col, title) => {
