@@ -68,7 +68,7 @@ const withDB = callback => async (ctx, ...args) => {
     const mongoUri = ctx.config.database
     const mongoOpt = {useNewUrlParser: true, useUnifiedTopology: true}
 
-    ctx.db = (await MongoClient.connect(mongoUri, mongoOpt)).db('amusement2')
+    ctx.db = (await MongoClient.connect(mongoUri, mongoOpt)).db(ctx.config.dbname)
     ctx.info(`Successfully connected to database`)
 
     return callback(ctx, ...args)
